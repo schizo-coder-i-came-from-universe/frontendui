@@ -23,6 +23,7 @@
     "vite-plugin-pwa": "^0.21.1"
   },
   "dependencies": {
+    "@rollup/rollup-darwin-x64": "4.37.0",
     "classnames": "^2.5.1",
     "react-bootstrap": "^2.10.6"
   }

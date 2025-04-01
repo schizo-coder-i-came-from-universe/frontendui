@@ -48,6 +48,8 @@ export default defineConfig({
       "@hrbolek/uoisfrontend-granting": path.resolve(__dirname, "../../packages/granting/src"),
       "@hrbolek/uoisfrontend-admissions": path.resolve(__dirname, "../../packages/admissions/src"),
       "@hrbolek/uoisfrontend-requests": path.resolve(__dirname, "../../packages/requests/src"),
+
+      "@jakubvf/uoisfrontend-faculty": path.resolve(__dirname, "../../packages/faculty/src"),
     },
   },
 

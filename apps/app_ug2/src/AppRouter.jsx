@@ -3,7 +3,7 @@ import {
       RouterProvider
 } from "react-router-dom";
   
-import { UserRouterSegment } from "@hrbolek/uoisfrontend-ug2";
+//import { UserRouterSegment } from "@hrbolek/uoisfrontend-ug2";
 
 export const Routes = [
     UserRouterSegment
