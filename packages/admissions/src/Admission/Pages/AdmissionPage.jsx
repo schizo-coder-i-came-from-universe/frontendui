@@ -34,6 +34,7 @@ const AdmissionPageContent = ({admission}) => {
             Admission {JSON.stringify(admission)}
         </AdmissionLargeCard>
     </>)
+
 }
 
 /**
