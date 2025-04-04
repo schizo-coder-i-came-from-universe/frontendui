@@ -23,7 +23,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router": "^7.0.2",
-    "@hrbolek/uoisfrontend-admissions": "*"
+    "@hrbolek/uoisfrontend-admissions": "*",
+    "@schizo-coder-i-came-from-universe/uoisfrontend-faculty_view": "*"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

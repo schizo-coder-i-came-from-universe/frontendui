@@ -32,9 +32,12 @@ const AdmissionPageContent = ({admission}) => {
         <AdmissionPageNavbar admission={admission} />
         <AdmissionLargeCard admission={admission}>
             Admission {JSON.stringify(admission)}
+            <br />
+            ID : {admission.program.id}
+            <br />
+            jmeno : {admission.program.name}
         </AdmissionLargeCard>
     </>)
-
 }
 
 /**
@@ -100,38 +103,7 @@ const AdmissionPageContentLazy = ({admission}) => {
  * // Navigating to "/admission/12345" will render the page for the admission entity with ID 12345.
  */
 export const AdmissionPage = () => {
-    const { id } = useParams();
-    const admission = { id };
-
-    return (
-        <>
-            <AdmissionPageContentLazy admission={admission} />
-            <div style={{ color: "red", fontSize: "44px", fontWeight: "bold" }}>KUBA MI POMOHL JE TO HROZNE MILY CLOVEK</div>
-            <ul>
-                <li>cobol</li>
-                <li>nevi</li>
-                <li>ktera</li>
-                <li>bije</li>
-                <li>bije</li>
-            </ul>
-
-            <div>kazdy vi ze robbie_hood je outta biznis</div>
-        </>
-    );
-};
-
-const AdmissionsMojeMama = () => {
-    const { loading, error, entity, dispatchResult } = useAsyncAction(AdmissionReadPageAsyncAction, {});
- 
-    if (loading) return <p>Loading</p>;
- 
-   console.log(dispatchResult);
- 
-   return (
-     <div>
-       {dispatchResult.data.result.map((admission, i) => (
-         <AdmissionMediumCard key={i} admission={{ id: admission.id, name: i }} />
-       ))}
-     </div>
-    );
- };
+    const {id} = useParams()
+    const admission = {id}
+    return <AdmissionPageContentLazy admission={admission} />
+}
