@@ -10,7 +10,19 @@ fragment AdmissionLink on AdmissionGQLModel {
     id
     name
   }
+  examLastDate
+  examStartDate
+  paymentInfo {
+    amount
+    accountNumber
+    SWIFT
+    IBAN
+  }
+  conditionDate
+  conditionExtendedDate
+  requestExtraDateDate
 }
+
 `)
 
 

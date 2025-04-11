@@ -31,11 +31,37 @@ const AdmissionPageContent = ({admission}) => {
     return (<>
         <AdmissionPageNavbar admission={admission} />
         <AdmissionLargeCard admission={admission}>
-            Admission {JSON.stringify(admission)}
+            {/* Admission {JSON.stringify(admission)} */}
             <br />
-            ID : {admission.program.id}
+            {/* ID programu : {admission.program.id} */}
             <br />
-            jmeno : {admission.program.name}
+            Jmeno programu: {admission.program.name}
+            <br />
+            Datum zacatku prijimaciho rizeni: {admission.examStartDate}
+            <br />
+            Datum ukonceni: {admission.examLastDate}
+            <br />
+            <br />
+            <div style={{ color: 'red', fontWeight: 'bold' }}>
+            Informace k platbe: 
+            </div>
+            <br />
+            Castka: {admission.paymentInfo.amount}
+            <br />
+            Cislo uctu: {admission.paymentInfo.accountNumber}
+            <br />
+            SWIFT: {admission.paymentInfo.SWIFT}
+            <br />
+            IBAN: {admission.paymentInfo.IBAN}
+            <br />
+            <br />
+            Datum podani zadosti: {admission.conditionDate}
+            <br />
+            Prodlouzeni: {admission.conditionExtendedDate}
+            <br />
+            Datum podani zadosti o prodlouzeni: {admission.requestExtraDateDate}
+            <br />
+            Pocet podanych zadosti:
         </AdmissionLargeCard>
     </>)
 }

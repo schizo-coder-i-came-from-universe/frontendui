@@ -24,8 +24,11 @@
 export const AdmissionMediumContent = ({admission, children}) => {
     return (
         <>
-            AdmissionMediumContent <br />
-            {JSON.stringify(admission)}
+            {/* AdmissionMediumContent <br /> */}
+            {/* {JSON.stringify(admission)} */}
+            <div style={{ color: 'blue', fontWeight: 'bold' }}>
+                Informace o prijimacim rizeni na fakultu
+            </div>
             {children}
         </>
     )
