@@ -13,6 +13,9 @@ fragment AdmissionLink on AdmissionGQLModel {
   examLastDate
   examStartDate
   paymentInfo {
+    __typename
+    id
+    lastchange
     amount
     accountNumber
     SWIFT

@@ -3,9 +3,10 @@ import { useParams } from "react-router"
 
 import { CreateDelayer, ErrorHandler, LoadingSpinner } from "@hrbolek/uoisfrontend-shared"
 import { useAsyncAction } from "@hrbolek/uoisfrontend-gql-shared"
-import { UserLargeCard } from "../Components"
+import { StateMachnineManagement, UserButton, UserData, UserLargeCard } from "../Components"
 import { UserReadAsyncAction } from "../Queries"
 import { UserPageNavbar } from "./UserPageNavbar"
+import { UserGroupsAttribute } from "../Vectors/UserGroupsAttribute"
 
 /**
  * A page content component for displaying detailed information about an user entity.
@@ -31,7 +32,14 @@ const UserPageContent = ({user}) => {
     return (<>
         <UserPageNavbar user={user} />
         <UserLargeCard user={user}>
-            User {JSON.stringify(user)}
+            <UserGroupsAttribute user={user} />
+
+            <UserButton operation="U" user={user} className="btn btn-primary">Upravit</UserButton>
+            <StateMachnineManagement user={user} />
+            <UserData user={user} />
+            <UserData user={user} />
+            
+            <pre>{JSON.stringify(user, null, 2)}</pre> 
         </UserLargeCard>
     </>)
 }

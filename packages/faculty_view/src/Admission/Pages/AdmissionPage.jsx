@@ -2,16 +2,16 @@ import { useState } from "react"
 import { useParams } from "react-router"
 
 import { CreateDelayer, ErrorHandler, LoadingSpinner } from "@hrbolek/uoisfrontend-shared"
-import { useAsyncAction } from "@hrbolek/uoisfrontend-gql-shared"
-import { AdmissionLargeCard } from "../Components"
+import { createAsyncGraphQLAction, useAsyncAction } from "@hrbolek/uoisfrontend-gql-shared"
+import { StateMachnineManagement,AdmissionButton, AdmissionLargeCard } from "../Components"
 import { AdmissionReadAsyncAction } from "../Queries"
 import { AdmissionPageNavbar } from "./AdmissionPageNavbar"
 
 /**
  * A page content component for displaying detailed information about an admission entity.
  *
- * This component utilizes `AdmissionLargeCard` to create a structured layout and displays 
- * the serialized representation of the `admission` object within the card's content.
+ * This component utilizes AdmissionLargeCard to create a structured layout and displays 
+ * the serialized representation of the admission object within the card's content.
  *
  * @component
  * @param {Object} props - The properties for the AdmissionPageContent component.
@@ -27,7 +27,29 @@ import { AdmissionPageNavbar } from "./AdmissionPageNavbar"
  * 
  * <AdmissionPageContent admission={admissionEntity} />
  */
+
+const AdmissionUpdateAsyncAction = createAsyncGraphQLAction(`
+mutation paymentInfoUpdate($id: UUID!, $lastchange: DateTime!, $accountNumber: String, $specificSymbol: String, $constantSymbol: String, $IBAN: String, $SWIFT: String, $amount: Float) {
+  paymentInfoUpdate(paymentInfo: {id: $id, lastchange: $lastchange, accountNumber: $accountNumber, specificSymbol: $specificSymbol, constantSymbol: $constantSymbol, IBAN: $IBAN, SWIFT: $SWIFT, amount: $amount}) {
+    ... on PaymentInfoGQLModel {
+      __typename	
+      id
+      amount
+    }
+    ... on PaymentInfoGQLModelUpdateError {
+      msg
+      failed
+      input
+    }
+  }
+}    
+`)
+
 const AdmissionPageContent = ({admission}) => {
+    const {fetch} = useAsyncAction(AdmissionUpdateAsyncAction, {}, {deferred: true})
+    // State to hold user-inputted amount
+    const [newAmount, setNewAmount] = useState(admission.paymentInfo.amount || 0)
+
     return (<>
         <AdmissionPageNavbar admission={admission} />
         <AdmissionLargeCard admission={admission}>
@@ -62,6 +84,41 @@ const AdmissionPageContent = ({admission}) => {
             Datum podani zadosti o prodlouzeni: {admission.requestExtraDateDate}
             <br />
             Pocet podanych zadosti:
+            <br />
+            {/* Input for new amount */}
+            <label>
+                    Nová částka:
+                    <input 
+                        type="number" 
+                        value={newAmount} 
+                        onChange={(e) => setNewAmount(parseFloat(e.target.value) || 0)} 
+                        style={{ marginLeft: '10px', padding: '5px', fontSize: '14px' }}
+                    />
+                </label>
+
+                <br /><br />
+
+                <button 
+                    onClick={() => fetch({
+                        amount: newAmount,
+                        id: admission.paymentInfo.id,
+                        lastchange: admission.paymentInfo.lastchange
+                    })} 
+                    style={{
+                        backgroundColor: '#007bff',
+                        color: 'white',
+                        border: 'none',
+                        padding: '10px 20px',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        fontWeight: 'bold'
+                    }}
+                >
+                    💾 Aktualizovat platbu
+                </button>
+            {/* <AdmissionButton operation="U" admission={admission} className="btn btn-primary">Upravit</AdmissionButton> */}
+            {/* <StateMachnineManagement admission={admission} /> */}
         </AdmissionLargeCard>
     </>)
 }
@@ -69,9 +126,9 @@ const AdmissionPageContent = ({admission}) => {
 /**
  * A lazy-loading component for displaying content of an admission entity.
  *
- * This component is created using `createLazyComponent` and wraps `AdmissionPageContent` to provide
- * automatic data fetching for the `admission` entity. It uses the `AdmissionReadAsyncAction` to fetch
- * the entity data and dynamically injects it into the wrapped component as the `admission` prop.
+ * This component is created using createLazyComponent and wraps AdmissionPageContent to provide
+ * automatic data fetching for the admission entity. It uses the AdmissionReadAsyncAction to fetch
+ * the entity data and dynamically injects it into the wrapped component as the admission prop.
  *
  * @constant
  * @type {React.Component}
@@ -79,8 +136,8 @@ const AdmissionPageContent = ({admission}) => {
  * @param {Object} props - The props for the lazy-loading component.
  * @param {string|number} props.admission - The identifier of the admission entity to fetch and display.
  *
- * @returns {JSX.Element} A component that fetches the `admission` entity data and displays it
- * using `AdmissionPageContent`, or shows loading and error states as appropriate.
+ * @returns {JSX.Element} A component that fetches the admission entity data and displays it
+ * using AdmissionPageContent, or shows loading and error states as appropriate.
  *
  * @example
  * // Example usage:
@@ -115,9 +172,9 @@ const AdmissionPageContentLazy = ({admission}) => {
 /**
  * A page component for displaying lazy-loaded content of an admission entity.
  *
- * This component extracts the `id` parameter from the route using `useParams`,
- * constructs an `admission` object, and passes it to the `AdmissionPageContentLazy` component.
- * The `AdmissionPageContentLazy` component handles the lazy-loading and rendering of the entity's content.
+ * This component extracts the id parameter from the route using useParams,
+ * constructs an admission object, and passes it to the AdmissionPageContentLazy component.
+ * The AdmissionPageContentLazy component handles the lazy-loading and rendering of the entity's content.
  *
  * @component
  * @returns {JSX.Element} The rendered page component displaying the lazy-loaded content for the admission entity.
@@ -133,3 +190,6 @@ export const AdmissionPage = () => {
     const admission = {id}
     return <AdmissionPageContentLazy admission={admission} />
 }
+
+
+
