@@ -6,6 +6,7 @@ import { createAsyncGraphQLAction, useAsyncAction } from "@hrbolek/uoisfrontend-
 import { StateMachnineManagement,AdmissionButton, AdmissionLargeCard } from "../Components"
 import { AdmissionReadAsyncAction } from "../Queries"
 import { AdmissionPageNavbar } from "./AdmissionPageNavbar"
+import {ProgramSelect} from "../Components/ProgramSelect"
 
 /**
  * A page content component for displaying detailed information about an admission entity.
@@ -50,6 +51,7 @@ const AdmissionPageContent = ({admission}) => {
     // State to hold user-inputted amount
     const [newAmount, setNewAmount] = useState(admission.paymentInfo.amount || 0)
 
+    
     return (<>
         <AdmissionPageNavbar admission={admission} />
         <AdmissionLargeCard admission={admission}>
@@ -117,8 +119,14 @@ const AdmissionPageContent = ({admission}) => {
                 >
                     💾 Aktualizovat platbu
                 </button>
-            {/* <AdmissionButton operation="U" admission={admission} className="btn btn-primary">Upravit</AdmissionButton> */}
-            {/* <StateMachnineManagement admission={admission} /> */}
+                <br />
+                <div style={{ color: 'blue', fontWeight: 'bold' }}>
+                Vyber studijního programu:
+                </div>
+                <ProgramSelect />
+
+                
+
         </AdmissionLargeCard>
     </>)
 }
