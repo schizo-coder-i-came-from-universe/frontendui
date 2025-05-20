@@ -7,6 +7,7 @@ import { StateMachnineManagement,AdmissionButton, AdmissionLargeCard } from "../
 import { AdmissionReadAsyncAction } from "../Queries"
 import { AdmissionPageNavbar } from "./AdmissionPageNavbar"
 import {ProgramSelect} from "../Components/ProgramSelect"
+import { format } from "date-fns"
 
 /**
  * A page content component for displaying detailed information about an admission entity.
@@ -45,7 +46,43 @@ mutation paymentInfoUpdate($id: UUID!, $lastchange: DateTime!, $accountNumber: S
   }
 }    
 `)
+const AdmissionTimeline = ({ admission }) => {
+  const events = [
+    { label: "📥 Začátek podávání přihlášek", date: admission.applicationStartDate },
+    { label: "📤 Konec podávání přihlášek", date: admission.applicationLastDate },
+    { label: "📝 Začátek přijímacích zkoušek", date: admission.examStartDate },
+    { label: "✅ Konec přijímacích zkoušek", date: admission.examLastDate },
+    { label: "💳 Termín platby", date: admission.paymentDate },
+    { label: "📄 Termín doložení podmínek", date: admission.conditionDate },
+    { label: "⏳ Prodloužený termín podmínek", date: admission.conditionExtendedDate },
+  ].filter(e => e.date);
 
+  const sorted = events.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  return (
+    <div style={{ borderLeft: "3px solid #007bff", paddingLeft: "20px", marginTop: "20px" }}>
+      <h3 style={{ marginBottom: "1rem" }}>🗓️ Časová osa přijímacího řízení</h3>
+      {sorted.map(({ label, date }, i) => (
+        <div key={i} style={{ marginBottom: "15px", position: "relative" }}>
+          <div
+            style={{
+              position: "absolute",
+              left: "-11px",
+              top: "4px",
+              width: "10px",
+              height: "10px",
+              backgroundColor: "#007bff",
+              borderRadius: "50%",
+            }}
+          />
+          <strong>{label}</strong>
+          <br />
+          <span style={{ color: "#000" }}>{format(new Date(date), "d. M. yyyy")}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
 export const AdmissionPageContent = ({
     admission,
   }) => {
@@ -58,91 +95,138 @@ export const AdmissionPageContent = ({
     
 
 
-  
+    // Function to handle program change
     const handleProgramChange = (program) => {
         if (program) setSelectedProgram(program);
       };
       
+    // Function to handle payment update
+    const [showPaymentDetails, setShowPaymentDetails] = useState(false);
+
+    //Function to handle opening and closing admission
+    //no backend 
+    const [isAdmissionOpen, setIsAdmissionOpen] = useState(admission.isOpen ?? true);
+
+    
     return (
       <>
         <AdmissionPageNavbar admission={admission} />
         <AdmissionLargeCard admission={admission}>
-          <br />
-          ID programu : {selectedProgram?.id}
-          <br />
-          Jmeno programu: {selectedProgram?.name}
-          <br />
-          Datum zacatku prijimaciho rizeni: {admission.examStartDate}
-          <br />
-          Datum ukonceni: {admission.examLastDate}
-          <br />
-          <br />
-          <div style={{ color: "red", fontWeight: "bold" }}>
-            Informace k platbe:
-          </div>
-          <br />
-          Castka: {admission.paymentInfo.amount}
-          <br />
-          Cislo uctu: {admission.paymentInfo.accountNumber}
-          <br />
-          SWIFT: {admission.paymentInfo.SWIFT}
-          <br />
-          IBAN: {admission.paymentInfo.IBAN}
-          <br />
-          <br />
-          Datum podani zadosti: {admission.conditionDate}
-          <br />
-          Prodlouzeni: {admission.conditionExtendedDate}
-          <br />
-          Datum podani zadosti o prodlouzeni: {admission.requestExtraDateDate}
-          <br />
-          Pocet podanych zadosti:
-          <br />
-          <label>
-            Nová částka:
-            <input
-              type="number"
-              value={newAmount}
-              onChange={(e) => setNewAmount(parseFloat(e.target.value) || 0)}
-              style={{
-                marginLeft: "10px",
-                padding: "5px",
-                fontSize: "14px",
-              }}
-            />
-          </label>
-          <br />
-          <br />
-          <button
-            onClick={() =>
-              fetch({
-                amount: newAmount,
-                id: admission.paymentInfo.id,
-                lastchange: admission.paymentInfo.lastchange,
-              })
-            }
+        <div style={{ display: "flex", gap: "40px", alignItems: "flex-start" }}>
+          {/* Left side: main content */}
+          <div style={{ flex: 1 }}>
+            ID programu : {selectedProgram?.id}
+            <br />
+            Jmeno programu: {selectedProgram?.name}
+            <br />
+
+
+
+            <br />
+            <div
+            onClick={() => setShowPaymentDetails(!showPaymentDetails)}
             style={{
-              backgroundColor: "#007bff",
-              color: "white",
-              border: "none",
-              padding: "10px 20px",
-              borderRadius: "5px",
-              cursor: "pointer",
-              fontSize: "16px",
+              color: "red",
               fontWeight: "bold",
+              cursor: "pointer",
+              userSelect: "none",
+              marginBottom: "5px",
             }}
           >
-            💾 Aktualizovat platbu
-          </button>
-          <br />
-          <div style={{ color: "blue", fontWeight: "bold" }}>
-            Vyber studijního programu:
+            Informace k platbě {showPaymentDetails ? "▲" : "▼"}
           </div>
-          <ProgramSelect
-            selectedId={selectedProgram.id}
-            onChange={handleProgramChange}
-          />
-        </AdmissionLargeCard>
+
+          {showPaymentDetails && (
+            <div style={{ marginBottom: "10px" }}>
+              Částka: {admission.paymentInfo.amount}
+              <br />
+              Číslo účtu: {admission.paymentInfo.accountNumber}
+              <br />
+              SWIFT: {admission.paymentInfo.SWIFT}
+              <br />
+              IBAN: {admission.paymentInfo.IBAN}
+              <br />
+            </div>)}
+
+            Pocet podanych zadosti: {admission.paymentInfo.payments.length}
+            <br />
+
+            <br />
+            <label>
+              Nová částka:
+              <input
+                type="number"
+                value={newAmount}
+                onChange={(e) => setNewAmount(parseFloat(e.target.value) || 0)}
+                style={{
+                  marginLeft: "10px",
+                  padding: "5px",
+                  fontSize: "14px",
+                }}
+              />
+            </label>
+            <br />
+            <br />
+            <button
+              onClick={() =>
+                fetch({
+                  amount: newAmount,
+                  id: admission.paymentInfo.id,
+                  lastchange: admission.paymentInfo.lastchange,
+                })
+              }
+              style={{
+                backgroundColor: "#007bff",
+                color: "white",
+                border: "none",
+                padding: "10px 20px",
+                borderRadius: "5px",
+                cursor: "pointer",
+                fontSize: "16px",
+                fontWeight: "bold",
+              }}
+            >
+              💾 Aktualizovat platbu
+            </button>
+            <br />
+            <div style={{ color: "blue", fontWeight: "bold" }}>
+              Vyber studijního programu:
+            </div>
+            <ProgramSelect
+              selectedId={selectedProgram.id}
+              onChange={handleProgramChange}
+            />
+          </div>
+          <br />
+          <div style={{ fontWeight: "bold" }}>
+            Stav primaciho rizeni:{" "}
+            <span style={{ color: isAdmissionOpen ? "green" : "red" }}>
+              {isAdmissionOpen ? "Otevřene" : "Uzavřene"}
+            </span>
+          </div>
+
+          <button
+            onClick={() => setIsAdmissionOpen(!isAdmissionOpen)}
+            style={{
+              backgroundColor: isAdmissionOpen ? "red" : "green",
+              color: "white",
+              border: "none",
+              padding: "8px 16px",
+              borderRadius: "5px",
+              cursor: "pointer",
+              fontWeight: "bold",
+              marginBottom: "10px"
+            }}
+          >
+            {isAdmissionOpen ? "Uzavřít rizeni" : "Otevřít rizeni"}
+            </button>
+
+          {/* Right side: timeline */}
+          <div style={{ width: "320px", minWidth: "250px" }}>
+            <AdmissionTimeline admission={admission} />
+          </div>
+        </div>
+      </AdmissionLargeCard>
       </>
     );
   };
@@ -214,6 +298,3 @@ export const AdmissionPage = () => {
     const admission = {id}
     return <AdmissionPageContentLazy admission={admission} />
 }
-
-
-

@@ -6,13 +6,23 @@ fragment AdmissionLink on AdmissionGQLModel {
   __typename
   id
   lastchange
+  state{
+    __typename
+    id
+    name
+  }
   program {
     id
     name
   }
   
+  conditionDate
   examLastDate
   examStartDate
+  paymentDate
+  applicationLastDate
+  applicationStartDate
+  conditionExtendedDate
   paymentInfo {
     __typename
     id
@@ -21,10 +31,10 @@ fragment AdmissionLink on AdmissionGQLModel {
     accountNumber
     SWIFT
     IBAN
+    payments{
+      id
+      }
   }
-  conditionDate
-  conditionExtendedDate
-  requestExtraDateDate
 }
 
 `)
