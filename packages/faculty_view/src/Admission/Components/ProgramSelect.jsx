@@ -22,7 +22,12 @@ export const ProgramSelect = ({ selectedId, onChange }) => {
           res?.data?.programPage;  // Case 2: Nested under `data`
         
         if (fetchedPrograms) {
-          setPrograms(fetchedPrograms);
+          // Add mock open/closed state
+          const programsWithStatus = fetchedPrograms.map((p) => ({
+              ...p,
+            isAdmissionOpen: true, // or false, or derive from real data
+          }));
+          setPrograms(programsWithStatus);
         }
       })
       .catch((err) => {
@@ -54,4 +59,5 @@ export const ProgramSelect = ({ selectedId, onChange }) => {
       ))}
     </select>
   );
+
 };
