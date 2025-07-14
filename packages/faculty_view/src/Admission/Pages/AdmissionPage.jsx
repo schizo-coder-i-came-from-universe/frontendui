@@ -32,6 +32,7 @@ import { format } from "date-fns"
  * <AdmissionPageContent admission={admissionEntity} />
  */
 
+// This component displays a timeline of important dates related to the admission process.
 const AdmissionTimeline = ({ admission }) => {
   const events = [
     { label: "📥 Začátek podávání přihlášek", date: admission.applicationStartDate },
@@ -42,7 +43,7 @@ const AdmissionTimeline = ({ admission }) => {
     { label: "📄 Termín doložení podmínek", date: admission.conditionDate },
     { label: "⏳ Prodloužený termín podmínek", date: admission.conditionExtendedDate },
   ].filter(e => e.date);
-
+  // Today's date in ISO format
   const today = new Date();
   const todayISO = today.toISOString();
 
@@ -52,7 +53,7 @@ const AdmissionTimeline = ({ admission }) => {
   ];
 
   const sorted = allEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
-
+//format the date to a more readable format
   return (
     <div className="border-start border-primary border-3 ps-4 mt-4">
       <h3 className="mb-3">🗓️ Časová osa přijímacího řízení</h3>
@@ -76,11 +77,12 @@ const AdmissionTimeline = ({ admission }) => {
   );
 };
 
-
+// This component serves as the main content area for the admission page, displaying detailed information about a specific admission entity.
 export const AdmissionPageContent = ({
     admission, isEditMode
   }) => {
-    // Store selected program in state
+    
+    // State to hold the selected program, initialized with the admission's program
     const [selectedProgram, setSelectedProgram] = useState(admission.program);
 
     // State to hold user-inputted amount
@@ -109,6 +111,7 @@ export const AdmissionPageContent = ({
         setSelectedProgram({ ...program, isAdmissionOpen });
       }
     };
+    // Effect to initialize selectedProgram with the admission's program
     const toggleAdmissionStatus = () => {
       if (selectedProgram) {
         const updatedStatus = !selectedProgram.isAdmissionOpen;
@@ -138,10 +141,7 @@ export const AdmissionPageContent = ({
             <br />
             Jmeno programu: {selectedProgram?.name}
             <br />
-
-
-
-            <br />
+            <div className="my-4"></div>
             <div>Částka: {admission.paymentInfo.amount}</div>
             <div
             onClick={() => setShowPaymentDetails(!showPaymentDetails)}
@@ -155,8 +155,6 @@ export const AdmissionPageContent = ({
           </div>
           {showPaymentDetails && (
             <div style={{ marginBottom: "10px" }}>
-              
-              <br />
               Číslo účtu: {admission.paymentInfo.accountNumber}
               <br />
               SWIFT: {admission.paymentInfo.SWIFT}
@@ -173,6 +171,7 @@ export const AdmissionPageContent = ({
               />
             )}
             <div className="my-5"></div>
+            {isEditMode &&
             <label>
               Nová částka:
                 <input
@@ -185,7 +184,7 @@ export const AdmissionPageContent = ({
                   fontSize: "14px",
                 }}
               />
-            </label>
+            </label>}
             <br />
             <br />
             {isEditMode &&
