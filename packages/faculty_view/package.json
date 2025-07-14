@@ -1,18 +1,29 @@
 {
-  "name": "@schizo-coder-i-came-from-universe/uoisfrontend-faculty_view",
+  "name": "@schizo-coder/uoisfrontend-faculty_view",
   "version": "0.5.0",
   "main": "src/index.js",
+  "files": [
+    "src/"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "author": "schizo-coder-i-came-from-universe",
+  "license": "MIT",
+  "description": "React components for university faculty view and admissions management",
+  "keywords": ["react", "university", "faculty", "admissions", "components"],
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
   "dependencies": {
     "react-bootstrap-icons": "^1.11.5",
     "react-router": "^7.0.2",
-
     "@hrbolek/uoisfrontend-shared": "*",
     "@hrbolek/uoisfrontend-gql-shared": "*"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
   }
 }

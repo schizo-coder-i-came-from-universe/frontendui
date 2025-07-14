@@ -8,8 +8,8 @@ import { PaymentGenerator } from "../Components/PaymentGenerator"
 import { AdmissionReadAsyncAction } from "../Queries"
 import AdmissionUpdateAsyncAction from "../Queries/PaymentInfoUpdateAsyncAction"
 import { AdmissionPageNavbar } from "./AdmissionPageNavbar"
-import {ProgramSelect} from "../Components/ProgramSelect"
-import { format } from "date-fns"
+import { AdmissionTimeline } from "../Components/AdmissionTimeline"
+import { ProgramStatusManager } from "../Components/ProgramStatusManager"
 
 /**
  * A page content component for displaying detailed information about an admission entity.
@@ -32,50 +32,6 @@ import { format } from "date-fns"
  * <AdmissionPageContent admission={admissionEntity} />
  */
 
-// This component displays a timeline of important dates related to the admission process.
-const AdmissionTimeline = ({ admission }) => {
-  const events = [
-    { label: "📥 Začátek podávání přihlášek", date: admission.applicationStartDate },
-    { label: "📤 Konec podávání přihlášek", date: admission.applicationLastDate },
-    { label: "📝 Začátek přijímacích zkoušek", date: admission.examStartDate },
-    { label: "✅ Konec přijímacích zkoušek", date: admission.examLastDate },
-    { label: "💳 Termín platby", date: admission.paymentDate },
-    { label: "📄 Termín doložení podmínek", date: admission.conditionDate },
-    { label: "⏳ Prodloužený termín podmínek", date: admission.conditionExtendedDate },
-  ].filter(e => e.date);
-  // Today's date in ISO format
-  const today = new Date();
-  const todayISO = today.toISOString();
-
-  const allEvents = [
-    ...events,
-    { label: "📍 Dnes", date: todayISO, isToday: true }
-  ];
-
-  const sorted = allEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
-//format the date to a more readable format
-  return (
-    <div className="border-start border-primary border-3 ps-4 mt-4">
-      <h3 className="mb-3">🗓️ Časová osa přijímacího řízení</h3>
-      {sorted.map(({ label, date, isToday }, i) => (
-        <div key={i} className="mb-3 position-relative">
-          <div
-            className={`position-absolute rounded-circle ${isToday ? 'bg-success' : 'bg-primary'}`}
-            style={{
-              left: "-11px",
-              top: "4px",
-              width: "10px",
-              height: "10px",
-            }}
-          />
-          <strong className={isToday ? 'text-success' : ''}>{label}</strong>
-          <br />
-          <span className="text-dark">{format(new Date(date), "d. M. yyyy")}</span>
-        </div>
-      ))}
-    </div>
-  );
-};
 
 // This component serves as the main content area for the admission page, displaying detailed information about a specific admission entity.
 export const AdmissionPageContent = ({
@@ -97,37 +53,13 @@ export const AdmissionPageContent = ({
       setPaymentCount(prevCount => prevCount + 1)
     }
     
-  
-
-    // Load status from localStorage (fallback to true)
-    const getProgramOpenStatus = (programId) => {
-      const stored = localStorage.getItem(`admission-open-${programId}`);
-      return stored === null ? true : stored === "true";
-    };
-    // Function to handle program change
+    // Handler for program changes from ProgramStatusManager
     const handleProgramChange = (program) => {
-      if (program) {
-        const isAdmissionOpen = getProgramOpenStatus(program.id);
-        setSelectedProgram({ ...program, isAdmissionOpen });
-      }
+      setSelectedProgram(program);
     };
-    // Effect to initialize selectedProgram with the admission's program
-    const toggleAdmissionStatus = () => {
-      if (selectedProgram) {
-        const updatedStatus = !selectedProgram.isAdmissionOpen;
-        localStorage.setItem(`admission-open-${selectedProgram.id}`, updatedStatus.toString());
-    
-        setSelectedProgram((prev) => ({
-          ...prev,
-          isAdmissionOpen: updatedStatus,
-        }));
-      }
-    };
+
     // Function to handle payment update
     const [showPaymentDetails, setShowPaymentDetails] = useState(false);
-
-    //Function to handle opening and closing admission, redundant with the toggleAdmissionStatus
-    //const [isAdmissionOpen, setIsAdmissionOpen] = useState(admission.isOpen ?? true);
 
     
     return (
@@ -164,6 +96,8 @@ export const AdmissionPageContent = ({
             </div>)}
 
             Pocet podanych zadosti: {admission.paymentInfo.payments.length}
+            <br />
+          <div className="my-1"></div>
             {isEditMode && (
               <PaymentGenerator 
                 paymentInfoId={admission.paymentInfo.id}
@@ -185,8 +119,7 @@ export const AdmissionPageContent = ({
                 }}
               />
             </label>}
-            <br />
-            <br />
+          <div className="my-1"></div>
             {isEditMode &&
             <button
               onClick={() =>
@@ -201,33 +134,12 @@ export const AdmissionPageContent = ({
               💾 Aktualizovat platbu
             </button>}
             <br />
-            <div className="text-primary fw-bold">
-            <div className="my-4"></div>
-              Vyber studijního programu:
-            </div>
-            <ProgramSelect
-              selectedId={selectedProgram.id}
-              onChange={handleProgramChange}
+            <ProgramStatusManager 
+              admission={admission}
+              isEditMode={isEditMode}
+              onProgramChange={handleProgramChange}
             />
           </div>
-          <br />
-          {selectedProgram && (
-  <>
-    <div className="fw-bold">
-      Stav přijímacího řízení:{" "}
-      <span className={selectedProgram.isAdmissionOpen ? "text-success" : "text-danger"}>
-        {selectedProgram.isAdmissionOpen ? "Otevřené" : "Uzavřené"}
-      </span>
-    </div>
-    {isEditMode && 
-    <button
-      onClick={toggleAdmissionStatus}
-      className={`btn fw-bold mb-2 mt-1 ${selectedProgram.isAdmissionOpen ? 'btn-danger' : 'btn-success'}`}
-    >
-      {selectedProgram.isAdmissionOpen ? "Uzavřít řízení" : "Otevřít řízení"}
-    </button>}
-  </>
-)}
 
           {/* Right side: timeline */}
           <div style={{ width: "320px", minWidth: "250px" }}>
