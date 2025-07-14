@@ -13,8 +13,11 @@ export const Routes = [
     element: <UserPage />,
   },
   {path: '/admission/admission/view/:id',
-  element: <AdmissionPage />,
+  element: <AdmissionPage isEditMode={false}/>,
   },
+  {path: '/admission/admission/write/:id',
+    element: <AdmissionPage isEditMode={true}/>,
+    },
 ]
 
 // const router = createBrowserRouter(Routes, {basename: "/ug"});

@@ -57,12 +57,20 @@ const AdmissionTimeline = ({ admission }) => {
     { label: "⏳ Prodloužený termín podmínek", date: admission.conditionExtendedDate },
   ].filter(e => e.date);
 
-  const sorted = events.sort((a, b) => new Date(a.date) - new Date(b.date));
+  const today = new Date();
+  const todayISO = today.toISOString();
+
+  const allEvents = [
+    ...events,
+    { label: "📍 Dnes", date: todayISO, isToday: true }
+  ];
+
+  const sorted = allEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
 
   return (
     <div style={{ borderLeft: "3px solid #007bff", paddingLeft: "20px", marginTop: "20px" }}>
       <h3 style={{ marginBottom: "1rem" }}>🗓️ Časová osa přijímacího řízení</h3>
-      {sorted.map(({ label, date }, i) => (
+      {sorted.map(({ label, date, isToday }, i) => (
         <div key={i} style={{ marginBottom: "15px", position: "relative" }}>
           <div
             style={{
@@ -71,11 +79,11 @@ const AdmissionTimeline = ({ admission }) => {
               top: "4px",
               width: "10px",
               height: "10px",
-              backgroundColor: "#007bff",
+              backgroundColor: isToday ? "#28a745" : "#007bff",
               borderRadius: "50%",
             }}
           />
-          <strong>{label}</strong>
+          <strong style={isToday ? { color: "#28a745" } : {}}>{label}</strong>
           <br />
           <span style={{ color: "#000" }}>{format(new Date(date), "d. M. yyyy")}</span>
         </div>
@@ -83,8 +91,10 @@ const AdmissionTimeline = ({ admission }) => {
     </div>
   );
 };
+
+
 export const AdmissionPageContent = ({
-    admission,
+    admission, isEditMode
   }) => {
     // Store selected program in state
     const [selectedProgram, setSelectedProgram] = useState(admission.program);
@@ -94,18 +104,34 @@ export const AdmissionPageContent = ({
     const [newAmount, setNewAmount] = useState(admission.paymentInfo.amount || 0)
     
 
-
+    // Load status from localStorage (fallback to true)
+    const getProgramOpenStatus = (programId) => {
+      const stored = localStorage.getItem(`admission-open-${programId}`);
+      return stored === null ? true : stored === "true";
+    };
     // Function to handle program change
     const handleProgramChange = (program) => {
-        if (program) setSelectedProgram(program);
-      };
-      
+      if (program) {
+        const isAdmissionOpen = getProgramOpenStatus(program.id);
+        setSelectedProgram({ ...program, isAdmissionOpen });
+      }
+    };
+    const toggleAdmissionStatus = () => {
+      if (selectedProgram) {
+        const updatedStatus = !selectedProgram.isAdmissionOpen;
+        localStorage.setItem(`admission-open-${selectedProgram.id}`, updatedStatus.toString());
+    
+        setSelectedProgram((prev) => ({
+          ...prev,
+          isAdmissionOpen: updatedStatus,
+        }));
+      }
+    };
     // Function to handle payment update
     const [showPaymentDetails, setShowPaymentDetails] = useState(false);
 
-    //Function to handle opening and closing admission
-    //no backend 
-    const [isAdmissionOpen, setIsAdmissionOpen] = useState(admission.isOpen ?? true);
+    //Function to handle opening and closing admission, redundant with the toggleAdmissionStatus
+    //const [isAdmissionOpen, setIsAdmissionOpen] = useState(admission.isOpen ?? true);
 
     
     return (
@@ -154,7 +180,7 @@ export const AdmissionPageContent = ({
             <br />
             <label>
               Nová částka:
-              <input
+                <input
                 type="number"
                 value={newAmount}
                 onChange={(e) => setNewAmount(parseFloat(e.target.value) || 0)}
@@ -167,6 +193,7 @@ export const AdmissionPageContent = ({
             </label>
             <br />
             <br />
+            {isEditMode &&
             <button
               onClick={() =>
                 fetch({
@@ -187,7 +214,7 @@ export const AdmissionPageContent = ({
               }}
             >
               💾 Aktualizovat platbu
-            </button>
+            </button>}
             <br />
             <div style={{ color: "blue", fontWeight: "bold" }}>
               Vyber studijního programu:
@@ -198,28 +225,33 @@ export const AdmissionPageContent = ({
             />
           </div>
           <br />
-          <div style={{ fontWeight: "bold" }}>
-            Stav primaciho rizeni:{" "}
-            <span style={{ color: isAdmissionOpen ? "green" : "red" }}>
-              {isAdmissionOpen ? "Otevřene" : "Uzavřene"}
-            </span>
-          </div>
-
-          <button
-            onClick={() => setIsAdmissionOpen(!isAdmissionOpen)}
-            style={{
-              backgroundColor: isAdmissionOpen ? "red" : "green",
-              color: "white",
-              border: "none",
-              padding: "8px 16px",
-              borderRadius: "5px",
-              cursor: "pointer",
-              fontWeight: "bold",
-              marginBottom: "10px"
-            }}
-          >
-            {isAdmissionOpen ? "Uzavřít rizeni" : "Otevřít rizeni"}
-            </button>
+          {selectedProgram && (
+  <>
+    <div style={{ fontWeight: "bold" }}>
+      Stav přijímacího řízení:{" "}
+      <span style={{ color: selectedProgram.isAdmissionOpen ? "green" : "red" }}>
+        {selectedProgram.isAdmissionOpen ? "Otevřené" : "Uzavřené"}
+      </span>
+    </div>
+    {isEditMode && 
+    <button
+      onClick={toggleAdmissionStatus}
+      style={{
+        backgroundColor: selectedProgram.isAdmissionOpen ? "red" : "green",
+        color: "white",
+        border: "none",
+        padding: "8px 16px",
+        borderRadius: "5px",
+        cursor: "pointer",
+        fontWeight: "bold",
+        marginBottom: "10px",
+        marginTop: "5px",
+      }}
+    >
+      {selectedProgram.isAdmissionOpen ? "Uzavřít řízení" : "Otevřít řízení"}
+    </button>}
+  </>
+)}
 
           {/* Right side: timeline */}
           <div style={{ width: "320px", minWidth: "250px" }}>
@@ -253,7 +285,7 @@ export const AdmissionPageContent = ({
  *
  * <AdmissionPageContentLazy admission={admissionId} />
  */
-const AdmissionPageContentLazy = ({admission}) => {
+const AdmissionPageContentLazy = ({admission, isEditMode}) => {
     const { error, loading, entity, fetch } = useAsyncAction(AdmissionReadAsyncAction, admission)
     const [delayer] = useState(() => CreateDelayer())
 
@@ -273,7 +305,7 @@ const AdmissionPageContentLazy = ({admission}) => {
     return (<>
         {loading && <LoadingSpinner />}
         {error && <ErrorHandler errors={error} />}
-        {entity && <AdmissionPageContent admission={entity}  onChange={handleChange} onBlur={handleBlur} />}
+        {entity && <AdmissionPageContent admission={entity} isEditMode={isEditMode} onChange={handleChange} onBlur={handleBlur} />}
     </>)
 }
 
@@ -293,8 +325,8 @@ const AdmissionPageContentLazy = ({admission}) => {
  *
  * // Navigating to "/admission/12345" will render the page for the admission entity with ID 12345.
  */
-export const AdmissionPage = () => {
+export const AdmissionPage = ({isEditMode}) => {
     const {id} = useParams()
     const admission = {id}
-    return <AdmissionPageContentLazy admission={admission} />
+    return <AdmissionPageContentLazy isEditMode={isEditMode} admission={admission} />
 }
