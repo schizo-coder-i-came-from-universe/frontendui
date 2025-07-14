@@ -2,9 +2,10 @@ import { useEffect,useState } from "react"
 import { useParams } from "react-router"
 
 import { CreateDelayer, ErrorHandler, LoadingSpinner } from "@hrbolek/uoisfrontend-shared"
-import { createAsyncGraphQLAction, useAsyncAction } from "@hrbolek/uoisfrontend-gql-shared"
-import { StateMachnineManagement,AdmissionButton, AdmissionLargeCard } from "../Components"
+import { useAsyncAction } from "@hrbolek/uoisfrontend-gql-shared"
+import { StateMachnineManagement,AdmissionButton, AdmissionLargeCard} from "../Components"
 import { AdmissionReadAsyncAction } from "../Queries"
+import AdmissionUpdateAsyncAction from "../Queries/PaymentInfoUpdateAsyncAction"
 import { AdmissionPageNavbar } from "./AdmissionPageNavbar"
 import {ProgramSelect} from "../Components/ProgramSelect"
 import { format } from "date-fns"
@@ -30,22 +31,6 @@ import { format } from "date-fns"
  * <AdmissionPageContent admission={admissionEntity} />
  */
 
-const AdmissionUpdateAsyncAction = createAsyncGraphQLAction(`
-mutation paymentInfoUpdate($id: UUID!, $lastchange: DateTime!, $accountNumber: String, $specificSymbol: String, $constantSymbol: String, $IBAN: String, $SWIFT: String, $amount: Float) {
-  paymentInfoUpdate(paymentInfo: {id: $id, lastchange: $lastchange, accountNumber: $accountNumber, specificSymbol: $specificSymbol, constantSymbol: $constantSymbol, IBAN: $IBAN, SWIFT: $SWIFT, amount: $amount}) {
-    ... on PaymentInfoGQLModel {
-      __typename	
-      id
-      amount
-    }
-    ... on PaymentInfoGQLModelUpdateError {
-      msg
-      failed
-      input
-    }
-  }
-}    
-`)
 const AdmissionTimeline = ({ admission }) => {
   const events = [
     { label: "📥 Začátek podávání přihlášek", date: admission.applicationStartDate },
@@ -103,6 +88,10 @@ export const AdmissionPageContent = ({
     const {fetch} = useAsyncAction(AdmissionUpdateAsyncAction, {}, {deferred: true})
     const [newAmount, setNewAmount] = useState(admission.paymentInfo.amount || 0)
     
+    // State to track payment count for UI updates
+    const [paymentCount, setPaymentCount] = useState(admission.paymentInfo.payments?.length || 0)
+    
+  
 
     // Load status from localStorage (fallback to true)
     const getProgramOpenStatus = (programId) => {
@@ -174,10 +163,8 @@ export const AdmissionPageContent = ({
               <br />
             </div>)}
 
-            Pocet podanych zadosti: {admission.paymentInfo.payments.length}
-            <br />
-
-            <br />
+            Pocet podanych zadosti: {paymentCount}
+            
             <label>
               Nová částka:
                 <input
