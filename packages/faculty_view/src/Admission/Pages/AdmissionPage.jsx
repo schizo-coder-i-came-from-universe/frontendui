@@ -54,24 +54,22 @@ const AdmissionTimeline = ({ admission }) => {
   const sorted = allEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
 
   return (
-    <div style={{ borderLeft: "3px solid #007bff", paddingLeft: "20px", marginTop: "20px" }}>
-      <h3 style={{ marginBottom: "1rem" }}>🗓️ Časová osa přijímacího řízení</h3>
+    <div className="border-start border-primary border-3 ps-4 mt-4">
+      <h3 className="mb-3">🗓️ Časová osa přijímacího řízení</h3>
       {sorted.map(({ label, date, isToday }, i) => (
-        <div key={i} style={{ marginBottom: "15px", position: "relative" }}>
+        <div key={i} className="mb-3 position-relative">
           <div
+            className={`position-absolute rounded-circle ${isToday ? 'bg-success' : 'bg-primary'}`}
             style={{
-              position: "absolute",
               left: "-11px",
               top: "4px",
               width: "10px",
               height: "10px",
-              backgroundColor: isToday ? "#28a745" : "#007bff",
-              borderRadius: "50%",
             }}
           />
-          <strong style={isToday ? { color: "#28a745" } : {}}>{label}</strong>
+          <strong className={isToday ? 'text-success' : ''}>{label}</strong>
           <br />
-          <span style={{ color: "#000" }}>{format(new Date(date), "d. M. yyyy")}</span>
+          <span className="text-dark">{format(new Date(date), "d. M. yyyy")}</span>
         </div>
       ))}
     </div>
@@ -133,9 +131,9 @@ export const AdmissionPageContent = ({
       <>
         <AdmissionPageNavbar admission={admission} />
         <AdmissionLargeCard admission={admission}>
-        <div style={{ display: "flex", gap: "40px", alignItems: "flex-start" }}>
+        <div className="d-flex align-items-start" style={{ gap: "40px" }}>
           {/* Left side: main content */}
-          <div style={{ flex: 1 }}>
+          <div className="flex-grow-1">
             ID programu : {selectedProgram?.id}
             <br />
             Jmeno programu: {selectedProgram?.name}
@@ -144,22 +142,20 @@ export const AdmissionPageContent = ({
 
 
             <br />
+            <div>Částka: {admission.paymentInfo.amount}</div>
             <div
             onClick={() => setShowPaymentDetails(!showPaymentDetails)}
+            className="text-danger fw-bold mb-1"
             style={{
-              color: "red",
-              fontWeight: "bold",
               cursor: "pointer",
               userSelect: "none",
-              marginBottom: "5px",
             }}
           >
             Informace k platbě {showPaymentDetails ? "▲" : "▼"}
           </div>
-
           {showPaymentDetails && (
             <div style={{ marginBottom: "10px" }}>
-              Částka: {admission.paymentInfo.amount}
+              
               <br />
               Číslo účtu: {admission.paymentInfo.accountNumber}
               <br />
@@ -201,21 +197,12 @@ export const AdmissionPageContent = ({
                   lastchange: admission.paymentInfo.lastchange,
                 })
               }
-              style={{
-                backgroundColor: "#007bff",
-                color: "white",
-                border: "none",
-                padding: "10px 20px",
-                borderRadius: "5px",
-                cursor: "pointer",
-                fontSize: "16px",
-                fontWeight: "bold",
-              }}
+              className="btn btn-primary fw-bold"
             >
               💾 Aktualizovat platbu
             </button>}
             <br />
-            <div style={{ color: "blue", fontWeight: "bold" }}>
+            <div className="text-primary fw-bold">
             <div className="my-4"></div>
               Vyber studijního programu:
             </div>
@@ -227,26 +214,16 @@ export const AdmissionPageContent = ({
           <br />
           {selectedProgram && (
   <>
-    <div style={{ fontWeight: "bold" }}>
+    <div className="fw-bold">
       Stav přijímacího řízení:{" "}
-      <span style={{ color: selectedProgram.isAdmissionOpen ? "green" : "red" }}>
+      <span className={selectedProgram.isAdmissionOpen ? "text-success" : "text-danger"}>
         {selectedProgram.isAdmissionOpen ? "Otevřené" : "Uzavřené"}
       </span>
     </div>
     {isEditMode && 
     <button
       onClick={toggleAdmissionStatus}
-      style={{
-        backgroundColor: selectedProgram.isAdmissionOpen ? "red" : "green",
-        color: "white",
-        border: "none",
-        padding: "8px 16px",
-        borderRadius: "5px",
-        cursor: "pointer",
-        fontWeight: "bold",
-        marginBottom: "10px",
-        marginTop: "5px",
-      }}
+      className={`btn fw-bold mb-2 mt-1 ${selectedProgram.isAdmissionOpen ? 'btn-danger' : 'btn-success'}`}
     >
       {selectedProgram.isAdmissionOpen ? "Uzavřít řízení" : "Otevřít řízení"}
     </button>}
