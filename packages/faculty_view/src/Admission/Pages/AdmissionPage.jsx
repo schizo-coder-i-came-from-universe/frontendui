@@ -4,6 +4,7 @@ import { useParams } from "react-router"
 import { CreateDelayer, ErrorHandler, LoadingSpinner } from "@hrbolek/uoisfrontend-shared"
 import { useAsyncAction } from "@hrbolek/uoisfrontend-gql-shared"
 import { StateMachnineManagement,AdmissionButton, AdmissionLargeCard} from "../Components"
+import { PaymentGenerator } from "../Components/PaymentGenerator"
 import { AdmissionReadAsyncAction } from "../Queries"
 import AdmissionUpdateAsyncAction from "../Queries/PaymentInfoUpdateAsyncAction"
 import { AdmissionPageNavbar } from "./AdmissionPageNavbar"
@@ -91,6 +92,11 @@ export const AdmissionPageContent = ({
     // State to track payment count for UI updates
     const [paymentCount, setPaymentCount] = useState(admission.paymentInfo.payments?.length || 0)
     
+    // Handler for when a new payment is added
+    const handlePaymentAdded = (newPayment) => {
+      setPaymentCount(prevCount => prevCount + 1)
+    }
+    
   
 
     // Load status from localStorage (fallback to true)
@@ -163,8 +169,14 @@ export const AdmissionPageContent = ({
               <br />
             </div>)}
 
-            Pocet podanych zadosti: {paymentCount}
-            
+            Pocet podanych zadosti: {admission.paymentInfo.payments.length}
+            {isEditMode && (
+              <PaymentGenerator 
+                paymentInfoId={admission.paymentInfo.id}
+                onPaymentAdded={handlePaymentAdded}
+              />
+            )}
+            <div className="my-5"></div>
             <label>
               Nová částka:
                 <input
@@ -204,6 +216,7 @@ export const AdmissionPageContent = ({
             </button>}
             <br />
             <div style={{ color: "blue", fontWeight: "bold" }}>
+            <div className="my-4"></div>
               Vyber studijního programu:
             </div>
             <ProgramSelect
