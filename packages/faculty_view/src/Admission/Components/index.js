@@ -12,4 +12,5 @@ export * from './AdmissionMediumEditableContent'
 export * from './StateMachnineManagement'
 export * from './AdmissionTimeline'
 export * from './ProgramStatusManager'
+export * from './DataGenerator'
 

@@ -9,7 +9,8 @@ import {
 } from "react-router-dom";
 
 import { useAsyncAction } from '@hrbolek/uoisfrontend-gql-shared';
-import { AdmissionPage, UserPage, UserRouterSegment } from '@schizo-coder-i-came-from-universe/uoisfrontend-faculty_view';
+import { AdmissionPage, UserPage, UserRouterSegment, DataGenerator} from '@schizo-coder-i-came-from-universe/uoisfrontend-faculty_view';
+;
 
 /**
  * Application Routes Configuration
@@ -29,6 +30,9 @@ export const Routes = [
   {path: '/admission/admission/write/:id',
     element: <AdmissionPage isEditMode={true}/>,
     },
+    {path: '/admission/GenerateData',
+      element: <DataGenerator/>,
+      },
 ]
 
 /**

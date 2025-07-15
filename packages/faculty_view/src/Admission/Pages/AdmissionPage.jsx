@@ -66,86 +66,12 @@ export const AdmissionPageContent = ({
       <>
         <AdmissionPageNavbar admission={admission} />
         <AdmissionLargeCard admission={admission}>
-        <div className="d-flex align-items-start" style={{ gap: "40px" }}>
-          {/* Left side: main content */}
-          <div className="flex-grow-1">
-            ID programu : {selectedProgram?.id}
-            <br />
-            Jmeno programu: {selectedProgram?.name}
-            <br />
-            <div className="my-4"></div>
-            <div>Částka: {admission.paymentInfo.amount}</div>
-            <div
-            onClick={() => setShowPaymentDetails(!showPaymentDetails)}
-            className="text-danger fw-bold mb-1"
-            style={{
-              cursor: "pointer",
-              userSelect: "none",
-            }}
-          >
-            Informace k platbě {showPaymentDetails ? "▲" : "▼"}
-          </div>
-          {showPaymentDetails && (
-            <div style={{ marginBottom: "10px" }}>
-              Číslo účtu: {admission.paymentInfo.accountNumber}
-              <br />
-              SWIFT: {admission.paymentInfo.SWIFT}
-              <br />
-              IBAN: {admission.paymentInfo.IBAN}
-              <br />
-            </div>)}
-
-            Pocet podanych zadosti: {admission.paymentInfo.payments.length}
-            <br />
-          <div className="my-1"></div>
-            {isEditMode && (
-              <PaymentGenerator 
-                paymentInfoId={admission.paymentInfo.id}
-                onPaymentAdded={handlePaymentAdded}
-              />
-            )}
-            <div className="my-5"></div>
-            {isEditMode &&
-            <label>
-              Nová částka:
-                <input
-                type="number"
-                value={newAmount}
-                onChange={(e) => setNewAmount(parseFloat(e.target.value) || 0)}
-                style={{
-                  marginLeft: "10px",
-                  padding: "5px",
-                  fontSize: "14px",
-                }}
-              />
-            </label>}
-          <div className="my-1"></div>
-            {isEditMode &&
-            <button
-              onClick={() =>
-                fetch({
-                  amount: newAmount,
-                  id: admission.paymentInfo.id,
-                  lastchange: admission.paymentInfo.lastchange,
-                })
-              }
-              className="btn btn-primary fw-bold"
-            >
-              💾 Aktualizovat platbu
-            </button>}
-            <br />
-            <ProgramStatusManager 
-              admission={admission}
-              isEditMode={isEditMode}
-              onProgramChange={handleProgramChange}
-            />
-          </div>
+        
 
           {/* Right side: timeline */}
           <div style={{ width: "320px", minWidth: "250px" }}>
             <AdmissionTimeline admission={admission} />
           </div>
-        </div>
       </AdmissionLargeCard>
       </>
     );

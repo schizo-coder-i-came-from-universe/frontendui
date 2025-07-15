@@ -44,6 +44,7 @@ export const ProgramSelect = ({ selectedId, onChange }) => {
 
   return (
     <select
+      className="form-select"
       value={selectedId}
       onChange={(e) => {
         const selectedId = e.target.value;
@@ -51,6 +52,7 @@ export const ProgramSelect = ({ selectedId, onChange }) => {
         onChange(selectedProgram); // now sends full object
       }}
     >
+
       <option value="">-- select a program --</option>
       {programs.map((program) => (
         <option key={program.id} value={program.id}>

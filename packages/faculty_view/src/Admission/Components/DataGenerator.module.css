@@ -1,0 +1,64 @@
+.dataGeneratorRoot {
+    max-width: 600px;
+    margin: 32px auto;
+    padding: 24px;
+    background: #f8f9fa;
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  }
+  
+  .dataGeneratorCenter {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  
+  .dataGeneratorSection {
+    margin-bottom: 32px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+    padding: 20px;
+  }
+  
+  .dataGeneratorTableScroll {
+    overflow-x: auto;
+  }
+  
+  .dataGeneratorTable {
+    background: #fafdff;
+    border-radius: 8px;
+    min-width: 600px;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  .dataGeneratorTable th {
+    background: #f0f4fa;
+    font-weight: 600;
+    text-transform: capitalize;
+    white-space: nowrap;
+    padding: 12px;
+    text-align: left;
+  }
+  
+  .dataGeneratorTable td {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding: 12px;
+    text-align: left;
+  }
+  
+  .dataGeneratorTable tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .dataGeneratorTable tr:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .dataGeneratorHeading {
+    color: #1976d2;
+    margin-bottom: 16px;
+  }
