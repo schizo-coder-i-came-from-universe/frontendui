@@ -5,12 +5,10 @@ export const AdmissionLinkFragment = createQueryStrLazy(
 fragment AdmissionLink on AdmissionGQLModel {
   __typename
   id
+  name
   lastchange
-  state{
-    __typename
-    id
-    name
-  }
+  stateId
+
   program {
     id
     name
@@ -23,6 +21,7 @@ fragment AdmissionLink on AdmissionGQLModel {
   applicationLastDate
   applicationStartDate
   conditionExtendedDate
+  endDate
   paymentInfo {
     __typename
     id
@@ -33,6 +32,7 @@ fragment AdmissionLink on AdmissionGQLModel {
     IBAN
     payments{
       id
+      amount
       }
   }
 }

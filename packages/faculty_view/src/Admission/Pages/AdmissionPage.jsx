@@ -10,6 +10,7 @@ import AdmissionUpdateAsyncAction from "../Queries/PaymentInfoUpdateAsyncAction"
 import { AdmissionPageNavbar } from "./AdmissionPageNavbar"
 import { AdmissionTimeline } from "../Components/AdmissionTimeline"
 import { ProgramStatusManager } from "../Components/ProgramStatusManager"
+import { AdmissionList } from "../Components/AdmissionList"
 
 /**
  * A page content component for displaying detailed information about an admission entity.
@@ -38,28 +39,6 @@ export const AdmissionPageContent = ({
     admission, isEditMode
   }) => {
     
-    // State to hold the selected program, initialized with the admission's program
-    const [selectedProgram, setSelectedProgram] = useState(admission.program);
-
-    // State to hold user-inputted amount
-    const {fetch} = useAsyncAction(AdmissionUpdateAsyncAction, {}, {deferred: true})
-    const [newAmount, setNewAmount] = useState(admission.paymentInfo.amount || 0)
-    
-    // State to track payment count for UI updates
-    const [paymentCount, setPaymentCount] = useState(admission.paymentInfo.payments?.length || 0)
-    
-    // Handler for when a new payment is added
-    const handlePaymentAdded = (newPayment) => {
-      setPaymentCount(prevCount => prevCount + 1)
-    }
-    
-    // Handler for program changes from ProgramStatusManager
-    const handleProgramChange = (program) => {
-      setSelectedProgram(program);
-    };
-
-    // Function to handle payment update
-    const [showPaymentDetails, setShowPaymentDetails] = useState(false);
 
     
     return (
@@ -67,7 +46,7 @@ export const AdmissionPageContent = ({
         <AdmissionPageNavbar admission={admission} />
         <AdmissionLargeCard admission={admission}>
         
-
+        <AdmissionList />
           {/* Right side: timeline */}
           <div style={{ width: "320px", minWidth: "250px" }}>
             <AdmissionTimeline admission={admission} />

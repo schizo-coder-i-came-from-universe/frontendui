@@ -1,3 +1,6 @@
+const open = 'ece19b93-39de-41c2-93ae-efbb5f125a67'
+const closed = 'fce5bc69-f1e8-4150-a20a-ee1a9503af0b'
+import {AdmissionStateToggleButton} from './AdmissionStateToggleButton.jsx'
 /**
  * A component that displays medium-level content for an admission entity.
  *
@@ -22,14 +25,22 @@
  * </AdmissionMediumContent>
  */
 export const AdmissionMediumContent = ({admission, children}) => {
+    console.log(admission)
     return (
         <>
-            {/* AdmissionMediumContent <br /> */}
-            {/* {JSON.stringify(admission)} */}
-            <div style={{ color: 'blue', fontWeight: 'bold' }}>
-                Informace o prijimacim rizeni na fakultu
-            </div>
+                <br/>
+                {admission.name}
+                <br/>
+                {admission.id}
+                <br/>
+                {/* Status: {new Date() < new Date(admission.endDate) ? "Open" : "Closed"} */}
+                {/* Status real: {admission.stateId} */}
+                Status: {admission.stateId === open ? "Otevřené" : admission.stateId === closed ? "Zavřené" : "Unknown"}
+                <br/>
+                {admission.paymentInfo.payments.length} Podanych prihlasek
+                <AdmissionStateToggleButton admission={admission} />
             {children}
+            
         </>
-    )
+        )
 }
