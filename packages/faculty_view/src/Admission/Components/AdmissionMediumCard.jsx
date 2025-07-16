@@ -28,10 +28,10 @@ import { AdmissionMediumContent } from "./AdmissionMediumContent"
  *   <p>Additional details or actions for the entity.</p>
  * </AdmissionMediumCard>
  */
-export const AdmissionMediumCard = ({admission, children}) => {
+export const AdmissionMediumCard = ({admission, children, onRefresh}) => {
     return (
         <AdmissionCardCapsule title={<><PersonFill /> <AdmissionLink admission={admission} /></>}>
-            <AdmissionMediumContent admission={admission}>
+            <AdmissionMediumContent admission={admission} onRefresh={onRefresh}>
                 {children}
             </AdmissionMediumContent>
         </AdmissionCardCapsule>

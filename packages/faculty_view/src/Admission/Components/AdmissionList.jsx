@@ -11,6 +11,10 @@ export const AdmissionList = () => {
     {}
   );
 
+  const refreshAdmissions = () => {
+    fetch({});
+  };
+
   if (loading) return <LoadingSpinner />;
   if (error) return <ErrorHandler errors={error} />;
 
@@ -21,7 +25,7 @@ export const AdmissionList = () => {
       <h3>Admission Pages</h3>
         {admissions.map((admission) => (
             <div key={admission.id}>
-              <AdmissionMediumCard admission={admission}/>
+              <AdmissionMediumCard admission={admission} onRefresh={refreshAdmissions} />
               {/* <strong>ID:</strong> {admission.id} - <strong>Name:</strong> <Admissiondivnk admission={admission} /> */}
             </div>
           ))}

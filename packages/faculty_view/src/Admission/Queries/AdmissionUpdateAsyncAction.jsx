@@ -5,7 +5,7 @@ const AdmissionUpdateMutation = createQueryStrLazy(`
 mutation AdmissionUpdate($id: UUID!, $lastchange: DateTime!, $stateId: UUID) {
     result: admissionUpdate(admission: {id: $id, lastchange: $lastchange, stateId: $stateId}) {
         ... on AdmissionGQLModel {
-            ...AdmissionLargeFragment
+            ...AdmissionLarge
         }
     }
 }

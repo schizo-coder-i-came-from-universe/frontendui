@@ -6,7 +6,7 @@ import { AdmissionUpdateAsyncAction } from '../Queries/AdmissionUpdateAsyncActio
 const open = 'ece19b93-39de-41c2-93ae-efbb5f125a67'
 const closed = 'fce5bc69-f1e8-4150-a20a-ee1a9503af0b'
 
-export const AdmissionStateToggleButton = ({ admission }) => {
+export const AdmissionStateToggleButton = ({ admission, onRefresh }) => {
   const { loading, fetch } = useAsyncAction(AdmissionUpdateAsyncAction, {}, { deferred: true })
 
   const currentStateId = admission.stateId || open // Default to 'open' if no stateId
@@ -22,6 +22,10 @@ export const AdmissionStateToggleButton = ({ admission }) => {
         lastchange: admission.lastchange,
         stateId: nextStateId
       })
+      // Refresh the admission list after successful state change
+      if (onRefresh) {
+        onRefresh()
+      }
     } catch (error) {
       console.error('Error updating admission state:', error)
     }

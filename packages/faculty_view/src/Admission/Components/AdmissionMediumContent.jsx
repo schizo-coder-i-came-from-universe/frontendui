@@ -24,7 +24,7 @@ import {AdmissionStateToggleButton} from './AdmissionStateToggleButton.jsx'
  *   <p>Additional information about the entity.</p>
  * </AdmissionMediumContent>
  */
-export const AdmissionMediumContent = ({admission, children}) => {
+export const AdmissionMediumContent = ({admission, children, onRefresh}) => {
     console.log(admission)
     return (
         <>
@@ -38,7 +38,8 @@ export const AdmissionMediumContent = ({admission, children}) => {
                 Status: {admission.stateId === open ? "Otevřené" : admission.stateId === closed ? "Zavřené" : "Unknown"}
                 <br/>
                 {admission.paymentInfo.payments.length} Podanych prihlasek
-                <AdmissionStateToggleButton admission={admission} />
+                <br/>
+                <AdmissionStateToggleButton admission={admission} onRefresh={onRefresh} />
             {children}
             
         </>
