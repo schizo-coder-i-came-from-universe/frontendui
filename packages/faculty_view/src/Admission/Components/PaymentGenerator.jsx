@@ -8,7 +8,10 @@ export const PaymentGenerator = ({ paymentInfoId, onPaymentAdded }) => {
   // This function is called when the user clicks the "Add Payment" button
   const handleAddPayment = async () => {
     try {
-      const result = await fetch({ paymentInfoId });
+      // Generate amount with 50/50 chance of being 400
+      const amount = Math.random() < 1 ? 400 : null;
+      
+      const result = await fetch({ paymentInfoId, amount });
       if (result && result.paymentInsert && result.paymentInsert.__typename === "PaymentGQLModel") {
         onPaymentAdded(result.paymentInsert);
       }

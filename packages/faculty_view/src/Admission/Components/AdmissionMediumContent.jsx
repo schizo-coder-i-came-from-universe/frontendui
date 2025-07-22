@@ -1,6 +1,7 @@
 const open = 'ece19b93-39de-41c2-93ae-efbb5f125a67'
 const closed = 'fce5bc69-f1e8-4150-a20a-ee1a9503af0b'
 import {AdmissionStateToggleButton} from './AdmissionStateToggleButton.jsx'
+import {PaymentGenerator} from './PaymentGenerator.jsx'
 /**
  * A component that displays medium-level content for an admission entity.
  *
@@ -26,6 +27,16 @@ import {AdmissionStateToggleButton} from './AdmissionStateToggleButton.jsx'
  */
 export const AdmissionMediumContent = ({admission, children, onRefresh}) => {
     console.log(admission)
+    
+    const handlePaymentAdded = (newPayment) => {
+        console.log("New payment added:", newPayment);
+        if (onRefresh) {
+            onRefresh();
+        }
+    };
+
+    const paidApplicationsCount = admission.paymentInfo.payments.filter(payment => payment.amount).length;
+    
     return (
         <>
                 <br/>
@@ -37,9 +48,15 @@ export const AdmissionMediumContent = ({admission, children, onRefresh}) => {
                 {/* Status real: {admission.stateId} */}
                 Status: {admission.stateId === open ? "Otevřené" : admission.stateId === closed ? "Zavřené" : "Unknown"}
                 <br/>
-                {admission.paymentInfo.payments.length} Podanych prihlasek
+                {admission.paymentInfo.payments.length} Podaných přihlášek ({paidApplicationsCount} zaplacených)
                 <br/>
-                <AdmissionStateToggleButton admission={admission} onRefresh={onRefresh} />
+                <div className="d-flex align-items-center">
+                    <AdmissionStateToggleButton admission={admission} onRefresh={onRefresh} />
+                    <PaymentGenerator 
+                        paymentInfoId={admission.paymentInfo.id} 
+                        onPaymentAdded={handlePaymentAdded}
+                    />
+                </div>
             {children}
             
         </>
