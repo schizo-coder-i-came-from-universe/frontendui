@@ -9,7 +9,7 @@ export const PaymentGenerator = ({ paymentInfoId, onPaymentAdded }) => {
   const handleAddPayment = async () => {
     try {
       // Generate amount with 50/50 chance of being 400
-      const amount = Math.random() < 1 ? 400 : null;
+      const amount = Math.random() < 0.7 ? 400 : null;
       
       const result = await fetch({ paymentInfoId, amount });
       if (result && result.paymentInsert && result.paymentInsert.__typename === "PaymentGQLModel") {

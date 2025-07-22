@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 const open = 'ece19b93-39de-41c2-93ae-efbb5f125a67'
 const closed = 'fce5bc69-f1e8-4150-a20a-ee1a9503af0b'
 import {AdmissionStateToggleButton} from './AdmissionStateToggleButton.jsx'
@@ -28,15 +29,22 @@ import {PaymentGenerator} from './PaymentGenerator.jsx'
 export const AdmissionMediumContent = ({admission, children, onRefresh}) => {
     console.log(admission)
     
+    // Local state to track payments for real-time updates
+    const [payments, setPayments] = useState(admission.paymentInfo.payments);
+    
+    // Update local state when admission prop changes
+    useEffect(() => {
+        setPayments(admission.paymentInfo.payments);
+    }, [admission.paymentInfo.payments]);
+    
     const handlePaymentAdded = (newPayment) => {
         console.log("New payment added:", newPayment);
-        if (onRefresh) {
-            onRefresh();
-        }
+        // Update local payments state immediately
+        setPayments(prevPayments => [...prevPayments, newPayment]);
     };
 
-    const paidApplicationsCount = admission.paymentInfo.payments.filter(payment => payment.amount).length;
-    
+    const paidApplicationsCount = payments.filter(payment => payment.amount).length;
+    console.log(admission.program.licencedGroup)
     return (
         <>
                 <br/>
@@ -48,7 +56,9 @@ export const AdmissionMediumContent = ({admission, children, onRefresh}) => {
                 {/* Status real: {admission.stateId} */}
                 Status: {admission.stateId === open ? "Otevřené" : admission.stateId === closed ? "Zavřené" : "Unknown"}
                 <br/>
-                {admission.paymentInfo.payments.length} Podaných přihlášek ({paidApplicationsCount} zaplacených)
+                {payments.length} Podaných přihlášek ({paidApplicationsCount} zaplacených)
+                <br/>
+                {admission.program.licencedGroup.name}
                 <br/>
                 <div className="d-flex align-items-center">
                     <AdmissionStateToggleButton admission={admission} onRefresh={onRefresh} />

@@ -6,6 +6,8 @@ import { useAsyncAction } from "@hrbolek/uoisfrontend-gql-shared"
 import { GroupLargeCard } from "../Components"
 import { GroupReadAsyncAction } from "../Queries"
 import { GroupPageNavbar } from "./GroupPageNavbar"
+import { AdmissionList } from "../../Admission/Components/AdmissionList"
+import { AdmissionTimeline } from "../../Admission"
 
 /**
  * A page content component for displaying detailed information about an group entity.
@@ -31,7 +33,9 @@ const GroupPageContent = ({group}) => {
     return (<>
         <GroupPageNavbar group={group} />
         <GroupLargeCard group={group}>
-            Group {JSON.stringify(group)}
+            {/* Group {JSON.stringify(group)} */}
+        <AdmissionList groupId = {group.id}/> 
+        <AdmissionTimeline admission={admission} />
         </GroupLargeCard>
     </>)
 }

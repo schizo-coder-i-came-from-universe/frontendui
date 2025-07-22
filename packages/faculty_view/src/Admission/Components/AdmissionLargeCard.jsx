@@ -29,10 +29,10 @@ import { AdmissionMediumCard } from "./AdmissionMediumCard"
  */
 export const AdmissionLargeCard = ({admission, children}) => {
     return (
-        <AdmissionCardCapsule admission={admission} title={"Prijimaci rizeni FVT"} >
+        <AdmissionCardCapsule admission={admission} title={""} >
             <Row>
                 <LeftColumn>
-                    <AdmissionMediumCard admission={admission}/>
+                    <AdmissionMediumCard admission={admission} />
                 </LeftColumn>
                 <MiddleColumn>
                     {children}

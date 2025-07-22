@@ -5,7 +5,7 @@ import { AdmissionReadPageAsyncAction } from "../Queries/AdmissionReadPageAsyncA
 import { AdmissionLink } from "./AdmissionLink";
 import { AdmissionMediumCard } from "./AdmissionMediumCard";
 
-export const AdmissionList = () => {
+export const AdmissionList = ({groupId}) => {
   const { fetch, loading, error, dispatchResult } = useAsyncAction(
     AdmissionReadPageAsyncAction,
     {}
@@ -18,7 +18,11 @@ export const AdmissionList = () => {
   if (loading) return <LoadingSpinner />;
   if (error) return <ErrorHandler errors={error} />;
 
-  const admissions = dispatchResult?.data.result || [];
+  const admissions = (dispatchResult?.data.result || []).filter(admission => {
+    // Filter admissions by groupId if provided
+    return !groupId || admission.program.licencedGroup.id === groupId;
+  }
+  );
 
   return (
     <div>

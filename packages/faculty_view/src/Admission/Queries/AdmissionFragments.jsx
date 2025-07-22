@@ -12,6 +12,10 @@ fragment AdmissionLink on AdmissionGQLModel {
   program {
     id
     name
+    licencedGroup {
+      id
+      name
+    }
   }
   
   conditionDate

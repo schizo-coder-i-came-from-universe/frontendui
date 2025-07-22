@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 
 import { useAsyncAction } from '@hrbolek/uoisfrontend-gql-shared';
-import { AdmissionPage, UserPage, UserRouterSegment, DataGenerator} from '@schizo-coder-i-came-from-universe/uoisfrontend-faculty_view';
+import { AdmissionPage, UserPage, UserRouterSegment, DataGenerator,GroupPage} from '@schizo-coder-i-came-from-universe/uoisfrontend-faculty_view';
 ;
 
 /**
@@ -32,6 +32,9 @@ export const Routes = [
     },
     {path: '/admission/GenerateData',
       element: <DataGenerator/>,
+      },
+  {path: '/admission/group/write/:id',
+    element: <GroupPage isEditMode={true}/>,
       },
 ]
 
