@@ -9,7 +9,7 @@ const closed = 'fce5bc69-f1e8-4150-a20a-ee1a9503af0b'
 export const AdmissionStateToggleButton = ({ admission, onRefresh }) => {
   const { loading, fetch } = useAsyncAction(AdmissionUpdateAsyncAction, {}, { deferred: true })
 
-  const currentStateId = admission.stateId || closed // Default to 'open' if no stateId
+  const currentStateId = admission.stateId || open // Default to 'open' if no stateId
   const isOpen = currentStateId === open
   const nextStateId = isOpen ? closed : open
   const buttonText = isOpen ? 'Zavřít' : 'Otevřít'
@@ -34,7 +34,7 @@ export const AdmissionStateToggleButton = ({ admission, onRefresh }) => {
   return (
     <Button
       variant={buttonVariant}
-      size="sm"
+      size="me"
       onClick={handleToggle}
       disabled={loading}
     >

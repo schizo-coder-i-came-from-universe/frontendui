@@ -44,7 +44,7 @@ export const AdmissionPageContent = ({
     return (
       <>
         <AdmissionPageNavbar admission={admission} />
-        <AdmissionLargeCard admission={admission}>
+        <AdmissionLargeCard admission={admission} isEditMode={isEditMode}>
         
         <AdmissionList />
           {/* Right side: timeline */}

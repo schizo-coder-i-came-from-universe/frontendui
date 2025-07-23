@@ -24,7 +24,7 @@ export const PaymentGenerator = ({ paymentInfoId, onPaymentAdded }) => {
     <button
       onClick={handleAddPayment}
       disabled={loading}
-      className="btn btn-success fw-bold ms-2"
+      className="btn btn-success fw-bold"
     >
       {loading ? "Přidávám..." : "➕ Přidat žádost"}
     </button>

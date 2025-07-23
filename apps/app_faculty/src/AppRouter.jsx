@@ -36,6 +36,9 @@ export const Routes = [
   {path: '/admission/group/write/:id',
     element: <GroupPage isEditMode={true}/>,
       },
+  {path: '/admission/group/read/:id',
+    element: <GroupPage isEditMode={false}/>,
+      },
 ]
 
 /**

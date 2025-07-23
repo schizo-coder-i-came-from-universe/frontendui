@@ -27,12 +27,12 @@ import { AdmissionMediumCard } from "./AdmissionMediumCard"
  *   <p>Additional content for the middle column.</p>
  * </AdmissionLargeCard>
  */
-export const AdmissionLargeCard = ({admission, children}) => {
+export const AdmissionLargeCard = ({admission, children, isEditMode}) => {
     return (
         <AdmissionCardCapsule admission={admission} title={""} >
             <Row>
                 <LeftColumn>
-                    <AdmissionMediumCard admission={admission} />
+                    <AdmissionMediumCard admission={admission} isEditMode={isEditMode} />
                 </LeftColumn>
                 <MiddleColumn>
                     {children}

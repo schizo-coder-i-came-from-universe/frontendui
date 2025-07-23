@@ -7,6 +7,16 @@ fragment AdmissionLink on AdmissionGQLModel {
   id
   name
   lastchange
+  
+}
+
+`)
+
+
+export const AdmissionMediumFragment = createQueryStrLazy(
+`
+fragment AdmissionMedium on AdmissionGQLModel {
+  ...AdmissionLink
   stateId
 
   program {
@@ -39,15 +49,6 @@ fragment AdmissionLink on AdmissionGQLModel {
       amount
       }
   }
-}
-
-`)
-
-
-export const AdmissionMediumFragment = createQueryStrLazy(
-`
-fragment AdmissionMedium on AdmissionGQLModel {
-  ...AdmissionLink
 }
 `, AdmissionLinkFragment)
 

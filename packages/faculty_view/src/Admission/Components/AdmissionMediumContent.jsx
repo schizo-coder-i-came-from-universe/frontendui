@@ -26,7 +26,7 @@ import {PaymentGenerator} from './PaymentGenerator.jsx'
  *   <p>Additional information about the entity.</p>
  * </AdmissionMediumContent>
  */
-export const AdmissionMediumContent = ({admission, children, onRefresh}) => {
+export const AdmissionMediumContent = ({admission, children, onRefresh,isEditMode}) => {
     console.log(admission)
     
     // Local state to track payments for real-time updates
@@ -57,15 +57,17 @@ export const AdmissionMediumContent = ({admission, children, onRefresh}) => {
                 <br/>
                 {payments.length} Podaných přihlášek ({paidApplicationsCount} zaplacených)
                 <br/>
-                {admission.program.licencedGroup.name}
+                {/* {admission.program.licencedGroup.name} */}
                 <br/>
-                <div className="d-flex align-items-center">
+                {isEditMode &&
+                <div className="d-flex justify-content-between align-items-center">
                     <AdmissionStateToggleButton admission={admission} onRefresh={onRefresh} />
                     <PaymentGenerator 
                         paymentInfoId={admission.paymentInfo.id} 
                         onPaymentAdded={handlePaymentAdded}
                     />
                 </div>
+                }
             {children}
             
         </>

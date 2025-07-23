@@ -29,18 +29,32 @@ import { AdmissionReadPageAsyncAction, AdmissionTimeline } from "../../Admission
  * 
  * <GroupPageContent group={groupEntity} />
  */
-const GroupPageContent = ({group, admissions, onChange}) => {
+const GroupPageContent = ({group, admissions, onChange, isEditMode}) => {
     let suma = 0
+    let paidApplicationsCount = 0
     admissions.forEach(admission => {
         suma += admission.paymentInfo.payments.length
+        paidApplicationsCount += admission.paymentInfo.payments.filter(payment => payment.amount).length
     })
     return (<>
         <GroupPageNavbar group={group} />
         <GroupLargeCard group={group}>
-            {/* Group {JSON.stringify(group)} */}
-        <AdmissionList refreshAdmissions={onChange} admissions = {admissions}/> 
-        <h3>Celkovy počet přihlášek:<span class = "text-success"> {suma}</span> </h3>
-        <AdmissionTimeline admission={admissions[0]} />
+            <div className="row">
+        {/* Admission List on the left */}
+        <div className="col-md-8">
+            <AdmissionList refreshAdmissions={onChange} admissions={admissions} isEditMode={isEditMode}/>
+            <h3>
+            <br />
+            Celkový počet přihlášek:
+            <span className="text-success"> {suma}</span> ({paidApplicationsCount} zaplacených)
+            </h3>
+        </div>
+
+    {/* Timeline on the right */}
+        <div className="col-md-4">
+            <AdmissionTimeline admission={admissions} />
+        </div>
+            </div>
         </GroupLargeCard>
     </>)
 }
@@ -66,7 +80,7 @@ const GroupPageContent = ({group, admissions, onChange}) => {
  *
  * <GroupPageContentLazy group={groupId} />
  */
-const GroupPageContentLazy = ({group}) => {
+const GroupPageContentLazy = ({group, isEditMode}) => {
     let { error, loading, entity, fetch } = useAsyncAction(GroupReadAsyncAction, group)
     const [delayer] = useState(() => CreateDelayer())
 
@@ -98,7 +112,7 @@ const GroupPageContentLazy = ({group}) => {
     return (<>
         {loading && <LoadingSpinner />}
         {error && <ErrorHandler errors={error} />}
-        {entity && <GroupPageContent group={entity} admissions={admissions} onChange={handleChange} onBlur={handleBlur} />}
+        {entity && <GroupPageContent group={entity} admissions={admissions} onChange={handleChange} onBlur={handleBlur} isEditMode={isEditMode} />}
     </>)
 }
 
@@ -118,8 +132,8 @@ const GroupPageContentLazy = ({group}) => {
  *
  * // Navigating to "/group/12345" will render the page for the group entity with ID 12345.
  */
-export const GroupPage = () => {
+export const GroupPage = ({isEditMode}) => {
     const {id} = useParams()
     const group = {id}
-    return <GroupPageContentLazy group={group} />
+    return <GroupPageContentLazy group={group} isEditMode={isEditMode} />
 }
