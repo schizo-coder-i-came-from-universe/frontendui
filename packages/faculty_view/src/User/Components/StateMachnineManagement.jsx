@@ -1,5 +1,9 @@
 import { createAsyncGraphQLAction, useAsyncAction } from "@hrbolek/uoisfrontend-gql-shared"
 
+/**
+ * GraphQL mutation action for inserting state machines
+ * Creates a new state machine with the provided name
+ */
 const InsertStateMachineAsyncAction = createAsyncGraphQLAction(
     `mutation statemachineinsert($name: String!) {
   statemachineInsert(statemachine: {name: $name}) {
@@ -19,6 +23,26 @@ fragment StateMachineMedium on StateMachineGQLModel {
 }`
 )
 
+/**
+ * State Machine Management Component
+ * 
+ * A React component that provides functionality for managing state machines.
+ * Allows inserting multiple test state machines and displays the operation status.
+ * 
+ * @component
+ * @returns {JSX.Element} A div containing state machine management interface
+ * 
+ * @example
+ * ```jsx
+ * <StateMachnineManagement />
+ * ```
+ * 
+ * Features:
+ * - Insert 5 test state machines at once
+ * - Loading state indication
+ * - Error handling and display
+ * - Success confirmation with entity data
+ */
 export const StateMachnineManagement = () => {
     const { loading, error, entity, fetch } = useAsyncAction(InsertStateMachineAsyncAction, {name: "Test"}, {deffered: true})
     const Insert5 = () => {

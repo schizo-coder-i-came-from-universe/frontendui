@@ -19,6 +19,18 @@ fragment StateMachineMedium on StateMachineGQLModel {
 }`
 )
 
+/**
+ * StateMachnineManagement Component
+ * 
+ * A development/testing component for managing state machines.
+ * Provides functionality to insert multiple test state machines.
+ * 
+ * @component
+ * @returns {JSX.Element} A div containing buttons and status information for state machine management.
+ * 
+ * @example
+ * <StateMachnineManagement />
+ */
 export const StateMachnineManagement = () => {
     const { loading, error, entity, fetch } = useAsyncAction(InsertStateMachineAsyncAction, {name: "Test"}, {deffered: true})
     const Insert5 = () => {

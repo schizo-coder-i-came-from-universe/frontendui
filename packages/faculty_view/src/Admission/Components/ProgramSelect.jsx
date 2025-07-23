@@ -2,6 +2,26 @@ import { useEffect, useState } from "react";
 import { useAsyncAction } from "@hrbolek/uoisfrontend-gql-shared";
 import { ProgramPageAsyncAction } from "../Queries/ProgramQuery";
 
+/**
+ * ProgramSelect Component
+ * 
+ * A select dropdown component that fetches and displays a list of programs.
+ * Users can select a program, and the component calls onChange with the selected program object.
+ * 
+ * @component
+ * @param {Object} props - The props for the ProgramSelect component.
+ * @param {string} props.selectedId - The currently selected program ID.
+ * @param {Function} props.onChange - Callback function called when a program is selected.
+ * @param {Object} props.onChange.program - The selected program object.
+ * 
+ * @returns {JSX.Element} A select element with program options or loading/error states.
+ * 
+ * @example
+ * <ProgramSelect 
+ *   selectedId="program-123" 
+ *   onChange={(program) => console.log('Selected program:', program)} 
+ * />
+ */
 export const ProgramSelect = ({ selectedId, onChange }) => {
   const { fetch, loading, error, entity } = useAsyncAction(
     ProgramPageAsyncAction,

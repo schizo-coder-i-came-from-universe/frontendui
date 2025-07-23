@@ -6,6 +6,10 @@ import { UserUpdateAsyncAction, UserReadAsyncAction } from '../Queries';
 import { UserMediumEditableContent } from './UserMediumEditableContent';
 let value = 0;
 
+/**
+ * GraphQL query action for searching groups by name pattern
+ * Fetches groups that match the provided name pattern using case-insensitive search
+ */
 const QueryGroupAsyncAction = createAsyncGraphQLAction(`query ($pattern: String!){
   groupPage(where: {name :{_ilike: $pattern}}) {
     __typename
@@ -15,6 +19,22 @@ const QueryGroupAsyncAction = createAsyncGraphQLAction(`query ($pattern: String!
 }`)
 
 
+/**
+ * Redux thunk action creator for updating user memberships
+ * 
+ * Processes membership insertion response and updates the user in Redux store
+ * if the insertion was successful.
+ * 
+ * @param {Object} jsonData - The response data from membership insertion mutation
+ * @param {Object} jsonData.data - The data object containing membershipInsert result
+ * @param {Object} jsonData.data.membershipInsert - The membership insertion result
+ * @returns {Function} Redux thunk function
+ * 
+ * @example
+ * ```javascript
+ * dispatch(updateMembershipsForUser(membershipResponse))
+ * ```
+ */
 export const updateMembershipsForUser = (jsonData) => async (dispatch, getState, next = (jsonResult) => jsonResult) => {
     console.log("updateMembershipsForUser.jsonData", jsonData)
     const membership = jsonData?.data?.membershipInsert;
@@ -27,6 +47,11 @@ export const updateMembershipsForUser = (jsonData) => async (dispatch, getState,
     }
 }
 
+/**
+ * GraphQL mutation action for inserting user memberships
+ * Creates a new membership relationship between a user and a group
+ * with optional start and end dates
+ */
 const MembeshipInsertAsyncAction = createAsyncGraphQLAction(`mutation membershipInsert($userId: UUID!, $groupId: UUID!, $id: UUID, $startdate: DateTime, $enddate: DateTime) {
   membershipInsert(membership: {userId: $userId, groupId: $groupId, id: $id, startdate: $startdate, enddate: $enddate}) {
     ... on MembershipGQLModel { ...Membership }
@@ -75,6 +100,27 @@ fragment Membership on MembershipGQLModel {
 // , updateMembershipsForUser
 )
 
+/**
+ * Local Group Display Component
+ * 
+ * Renders a clickable group item that can be selected for membership assignment.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.group - The group object to display
+ * @param {string} props.group.id - The group's unique identifier
+ * @param {string} props.group.name - The group's display name
+ * @param {Function} props.onSelect - Callback function called when group is selected
+ * @returns {JSX.Element} A div containing a clickable group link
+ * 
+ * @example
+ * ```jsx
+ * <LocalGroup 
+ *   group={{id: "123", name: "Development Team"}} 
+ *   onSelect={handleGroupSelect} 
+ * />
+ * ```
+ */
 const LocalGroup = ({group, onSelect}) => {
     const onClick = () => {
         console.log("LocalGroup.onClick", group.id, group.name)
@@ -87,6 +133,22 @@ const LocalGroup = ({group, onSelect}) => {
     )
 }
 
+/**
+ * Helper function to update user with new membership
+ * 
+ * Updates the user object in Redux store by adding the new membership
+ * to the user's memberships array if the membership creation was successful.
+ * 
+ * @param {Object} user - The user object to update
+ * @param {Object} membership - The membership object returned from GraphQL mutation
+ * @param {string} membership.__typename - The GraphQL typename of the membership
+ * @param {Function} dispatch - Redux dispatch function
+ * 
+ * @example
+ * ```javascript
+ * followUpUserUpdate(currentUser, newMembership, dispatch)
+ * ```
+ */
 const followUpUserUpdate = (user, membership, dispatch) => {
     const {__typename} = membership
     if (__typename === "MembershipGQLModel") {
@@ -97,6 +159,39 @@ const followUpUserUpdate = (user, membership, dispatch) => {
     } 
 }
 
+/**
+ * User Data Management Component
+ * 
+ * A comprehensive React component for managing user data including:
+ * - Group membership assignment through search and selection
+ * - User email editing with real-time updates
+ * - Interactive counter demonstration
+ * - Loading states and error handling
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.user - The user object containing user information
+ * @param {string} props.user.id - The user's unique identifier
+ * @param {string} props.user.email - The user's email address
+ * @param {Array} props.user.memberships - Array of user's current group memberships
+ * @returns {JSX.Element} A div containing user data management interface
+ * 
+ * @example
+ * ```jsx
+ * <UserData user={{
+ *   id: "user-123",
+ *   email: "user@example.com",
+ *   memberships: []
+ * }} />
+ * ```
+ * 
+ * Features:
+ * - Real-time group search with debounced input
+ * - Click-to-add group membership
+ * - Inline email editing
+ * - Counter state management demonstration
+ * - Comprehensive error handling and loading states
+ */
 export const UserData = ({user}) => {
     const {loading, error, fetch } = useAsyncAction(QueryGroupAsyncAction, {}, {deferred: true});
     const {loading: loadingInsert, error: errorInsert, fetch: fetchInsert} = useAsyncAction(MembeshipInsertAsyncAction, {}, {deferred: true});
@@ -184,6 +279,34 @@ export const UserData = ({user}) => {
 }
 
 
+/**
+ * User Email Edit Component
+ * 
+ * A React component that provides inline editing capabilities for user email
+ * and other user properties. Updates are sent immediately on change.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.user - The user object to edit
+ * @param {string} props.user.email - The user's current email address
+ * @param {string} props.user.id - The user's unique identifier
+ * @returns {JSX.Element} A div containing editable user fields
+ * 
+ * @example
+ * ```jsx
+ * <UserEmailEdit user={{
+ *   id: "user-123",
+ *   email: "current@example.com"
+ * }} />
+ * ```
+ * 
+ * Features:
+ * - Real-time email updates on input change
+ * - Generic field editing through onChange2 handler
+ * - Loading state indication during updates
+ * - Error handling and display
+ * - Integration with UserMediumEditableContent component
+ */
 export const UserEmailEdit = ({user}) => {
     const {loading, error, fetch } = useAsyncAction(UserUpdateAsyncAction, {}, {deferred: true});
     const onChange = (e) => {

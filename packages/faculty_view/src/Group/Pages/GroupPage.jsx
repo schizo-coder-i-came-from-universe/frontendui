@@ -86,7 +86,7 @@ const GroupPageContentLazy = ({group, isEditMode}) => {
 
       const { fetch: fetchAdmissions, loading: loadingAdmissions, error: errorAdmissions, dispatchResult } = useAsyncAction(
         AdmissionReadPageAsyncAction,
-        {}
+        {limit: 1000}
       );
         
       if (loading || loadingAdmissions) return <LoadingSpinner />;

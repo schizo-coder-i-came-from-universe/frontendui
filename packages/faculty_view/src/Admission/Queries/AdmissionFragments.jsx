@@ -52,6 +52,13 @@ fragment AdmissionMedium on AdmissionGQLModel {
 }
 `, AdmissionLinkFragment)
 
+/**
+ * AdmissionLargeFragment
+ * 
+ * GraphQL fragment for complete admission information.
+ * Currently extends AdmissionMediumFragment without additional fields.
+ * Can be extended in the future for more detailed admission data.
+ */
 export const AdmissionLargeFragment = createQueryStrLazy(
 `
 fragment AdmissionLarge on AdmissionGQLModel {
