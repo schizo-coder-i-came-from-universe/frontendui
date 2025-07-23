@@ -1,32 +1,14 @@
 import { useEffect, useState } from "react";
 import { useAsyncAction } from "@hrbolek/uoisfrontend-gql-shared";
 import { LoadingSpinner, ErrorHandler } from "@hrbolek/uoisfrontend-shared";
-import { AdmissionReadPageAsyncAction } from "../Queries/AdmissionReadPageAsyncAction";
 import { AdmissionLink } from "./AdmissionLink";
 import { AdmissionMediumCard } from "./AdmissionMediumCard";
 
-export const AdmissionList = ({groupId}) => {
-  const { fetch, loading, error, dispatchResult } = useAsyncAction(
-    AdmissionReadPageAsyncAction,
-    {}
-  );
-
-  const refreshAdmissions = () => {
-    fetch({});
-  };
-
-  if (loading) return <LoadingSpinner />;
-  if (error) return <ErrorHandler errors={error} />;
-
-  const admissions = (dispatchResult?.data.result || []).filter(admission => {
-    // Filter admissions by groupId if provided
-    return !groupId || admission.program.licencedGroup.id === groupId;
-  }
-  );
+export const AdmissionList = ({admissions, refreshAdmissions}) => {
 
   return (
     <div>
-      <h3>Admission Pages</h3>
+      <h3>Otevřené řízení na fakultu</h3>
         {admissions.map((admission) => (
             <div key={admission.id}>
               <AdmissionMediumCard admission={admission} onRefresh={refreshAdmissions} />

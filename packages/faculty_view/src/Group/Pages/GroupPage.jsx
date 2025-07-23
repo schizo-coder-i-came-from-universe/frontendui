@@ -7,7 +7,7 @@ import { GroupLargeCard } from "../Components"
 import { GroupReadAsyncAction } from "../Queries"
 import { GroupPageNavbar } from "./GroupPageNavbar"
 import { AdmissionList } from "../../Admission/Components/AdmissionList"
-import { AdmissionTimeline } from "../../Admission"
+import { AdmissionReadPageAsyncAction, AdmissionTimeline } from "../../Admission"
 
 /**
  * A page content component for displaying detailed information about an group entity.
@@ -29,17 +29,21 @@ import { AdmissionTimeline } from "../../Admission"
  * 
  * <GroupPageContent group={groupEntity} />
  */
-const GroupPageContent = ({group}) => {
+const GroupPageContent = ({group, admissions, onChange}) => {
+    let suma = 0
+    admissions.forEach(admission => {
+        suma += admission.paymentInfo.payments.length
+    })
     return (<>
         <GroupPageNavbar group={group} />
         <GroupLargeCard group={group}>
             {/* Group {JSON.stringify(group)} */}
-        <AdmissionList groupId = {group.id}/> 
-        <AdmissionTimeline admission={admission} />
+        <AdmissionList refreshAdmissions={onChange} admissions = {admissions}/> 
+        <h3>Celkovy počet přihlášek:<span class = "text-success"> {suma}</span> </h3>
+        <AdmissionTimeline admission={admissions[0]} />
         </GroupLargeCard>
     </>)
 }
-
 /**
  * A lazy-loading component for displaying content of an group entity.
  *
@@ -63,14 +67,26 @@ const GroupPageContent = ({group}) => {
  * <GroupPageContentLazy group={groupId} />
  */
 const GroupPageContentLazy = ({group}) => {
-    const { error, loading, entity, fetch } = useAsyncAction(GroupReadAsyncAction, group)
+    let { error, loading, entity, fetch } = useAsyncAction(GroupReadAsyncAction, group)
     const [delayer] = useState(() => CreateDelayer())
 
-    const handleChange = async(e) => {
-        // console.log("GroupCategoryPageContentLazy.handleChange.e", e)
-        const data = e.target.value
-        const serverResponse = await delayer(() => fetch(data))
-        // console.log("GroupCategoryPageContentLazy.serverResponse", serverResponse)
+      const { fetch: fetchAdmissions, loading: loadingAdmissions, error: errorAdmissions, dispatchResult } = useAsyncAction(
+        AdmissionReadPageAsyncAction,
+        {}
+      );
+        
+      if (loading || loadingAdmissions) return <LoadingSpinner />;
+      if (error || errorAdmissions) return <ErrorHandler errors={error || errorAdmissions} />;
+
+    
+      let admissions = (dispatchResult?.data.result || []).filter(admission => {
+        return !group.id || admission.program.licencedGroup.id === group.id;
+      }
+      );
+    
+    const handleChange = async() => {
+        entity = await delayer(() => fetch())
+        admissions = await delayer(() => fetchAdmissions())
     }
     const handleBlur = async(e) => {
         // console.log("GroupCategoryPageContentLazy.handleBlur.e", e)
@@ -82,7 +98,7 @@ const GroupPageContentLazy = ({group}) => {
     return (<>
         {loading && <LoadingSpinner />}
         {error && <ErrorHandler errors={error} />}
-        {entity && <GroupPageContent group={entity}  onChange={handleChange} onBlur={handleBlur} />}
+        {entity && <GroupPageContent group={entity} admissions={admissions} onChange={handleChange} onBlur={handleBlur} />}
     </>)
 }
 

@@ -1,3 +1,4 @@
+
 /**
  * A component that displays medium-level content for an group entity.
  *
@@ -24,8 +25,8 @@
 export const GroupMediumContent = ({group, children}) => {
     return (
         <>
-            GroupMediumContent <br />
-            {JSON.stringify(group)}
+            {/* {JSON.stringify(group)} */}
+            Vypsaná příjímací řízení <p></p>{group.name}
             {children}
         </>
     )

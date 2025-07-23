@@ -47,14 +47,13 @@ export const AdmissionMediumContent = ({admission, children, onRefresh}) => {
     console.log(admission.program.licencedGroup)
     return (
         <>
-                <br/>
-                {admission.name}
-                <br/>
-                {admission.id}
-                <br/>
+                {/* {admission.name} */}
+                {/* {admission.id} */}
                 {/* Status: {new Date() < new Date(admission.endDate) ? "Open" : "Closed"} */}
                 {/* Status real: {admission.stateId} */}
-                Status: {admission.stateId === open ? "Otevřené" : admission.stateId === closed ? "Zavřené" : "Unknown"}
+                Status: <span className={`fs-5 fw-semibold ${admission.stateId === open ? "text-success" : admission.stateId === closed ? "text-danger" : "text-secondary"}`}>
+                    {admission.stateId === open ? "Otevřené" : admission.stateId === closed ? "Zavřené" : "Unknown"}
+                </span>
                 <br/>
                 {payments.length} Podaných přihlášek ({paidApplicationsCount} zaplacených)
                 <br/>
