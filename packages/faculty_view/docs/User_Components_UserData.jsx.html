@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: User/Components/UserData.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: User/Components/UserData.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { createAsyncGraphQLAction, ItemActions, useAsyncAction } from '@hrbolek/uoisfrontend-gql-shared';
+import { CreateDelayer, DeleteButton, Input } from '@hrbolek/uoisfrontend-shared';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { UserUpdateAsyncAction, UserReadAsyncAction } from '../Queries';
+import { UserMediumEditableContent } from './UserMediumEditableContent';
+let value = 0;
+
+/**
+ * GraphQL query action for searching groups by name pattern
+ * Fetches groups that match the provided name pattern using case-insensitive search
+ */
+const QueryGroupAsyncAction = createAsyncGraphQLAction(`query ($pattern: String!){
+  groupPage(where: {name :{_ilike: $pattern}}) {
+    __typename
+    id
+    name
+  }
+}`)
+
+
+/**
+ * Redux thunk action creator for updating user memberships
+ * 
+ * Processes membership insertion response and updates the user in Redux store
+ * if the insertion was successful.
+ * 
+ * @param {Object} jsonData - The response data from membership insertion mutation
+ * @param {Object} jsonData.data - The data object containing membershipInsert result
+ * @param {Object} jsonData.data.membershipInsert - The membership insertion result
+ * @returns {Function} Redux thunk function
+ * 
+ * @example
+ * ```javascript
+ * dispatch(updateMembershipsForUser(membershipResponse))
+ * ```
+ */
+export const updateMembershipsForUser = (jsonData) => async (dispatch, getState, next = (jsonResult) => jsonResult) => {
+    console.log("updateMembershipsForUser.jsonData", jsonData)
+    const membership = jsonData?.data?.membershipInsert;
+    if (membership) {
+        const {__typename} = membership
+        if (__typename === "MembershipGQLModel") {
+            const {user} = membership
+            dispatch(ItemActions.item_update(user));
+        } 
+    }
+}
+
+/**
+ * GraphQL mutation action for inserting user memberships
+ * Creates a new membership relationship between a user and a group
+ * with optional start and end dates
+ */
+const MembeshipInsertAsyncAction = createAsyncGraphQLAction(`mutation membershipInsert($userId: UUID!, $groupId: UUID!, $id: UUID, $startdate: DateTime, $enddate: DateTime) {
+  membershipInsert(membership: {userId: $userId, groupId: $groupId, id: $id, startdate: $startdate, enddate: $enddate}) {
+    ... on MembershipGQLModel { ...Membership }
+    ... on InsertError { ...InsertError }
+  }
+}
+
+fragment InsertError on InsertError {
+  __typename
+  input
+  failed
+  msg
+}
+
+fragment Membership on MembershipGQLModel {
+  __typename
+  id
+  user {
+    id
+    name
+    surname
+    memberships {
+      id
+      group {
+        id
+        name
+        grouptype {
+          id
+          name
+        }
+      }
+    }
+  }
+  group {
+    id
+    name
+    grouptype { 
+        id
+        name
+    }
+
+  }
+  startdate
+  enddate
+}`
+// , updateMembershipsForUser
+)
+
+/**
+ * Local Group Display Component
+ * 
+ * Renders a clickable group item that can be selected for membership assignment.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.group - The group object to display
+ * @param {string} props.group.id - The group's unique identifier
+ * @param {string} props.group.name - The group's display name
+ * @param {Function} props.onSelect - Callback function called when group is selected
+ * @returns {JSX.Element} A div containing a clickable group link
+ * 
+ * @example
+ * ```jsx
+ * &lt;LocalGroup 
+ *   group={{id: "123", name: "Development Team"}} 
+ *   onSelect={handleGroupSelect} 
+ * />
+ * ```
+ */
+const LocalGroup = ({group, onSelect}) => {
+    const onClick = () => {
+        console.log("LocalGroup.onClick", group.id, group.name)
+        onSelect(group)
+    }
+    return (
+        &lt;div>
+            &lt;a onClick={onClick} href="#">{group.name} [{group.id}]&lt;/a>
+        &lt;/div>
+    )
+}
+
+/**
+ * Helper function to update user with new membership
+ * 
+ * Updates the user object in Redux store by adding the new membership
+ * to the user's memberships array if the membership creation was successful.
+ * 
+ * @param {Object} user - The user object to update
+ * @param {Object} membership - The membership object returned from GraphQL mutation
+ * @param {string} membership.__typename - The GraphQL typename of the membership
+ * @param {Function} dispatch - Redux dispatch function
+ * 
+ * @example
+ * ```javascript
+ * followUpUserUpdate(currentUser, newMembership, dispatch)
+ * ```
+ */
+const followUpUserUpdate = (user, membership, dispatch) => {
+    const {__typename} = membership
+    if (__typename === "MembershipGQLModel") {
+        const {memberships} = user
+        const newMemberships = [...memberships, membership]
+        const newUser = {...user, memberships: newMemberships}
+        dispatch(ItemActions.item_update(newUser));
+    } 
+}
+
+/**
+ * User Data Management Component
+ * 
+ * A comprehensive React component for managing user data including:
+ * - Group membership assignment through search and selection
+ * - User email editing with real-time updates
+ * - Interactive counter demonstration
+ * - Loading states and error handling
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.user - The user object containing user information
+ * @param {string} props.user.id - The user's unique identifier
+ * @param {string} props.user.email - The user's email address
+ * @param {Array} props.user.memberships - Array of user's current group memberships
+ * @returns {JSX.Element} A div containing user data management interface
+ * 
+ * @example
+ * ```jsx
+ * &lt;UserData user={{
+ *   id: "user-123",
+ *   email: "user@example.com",
+ *   memberships: []
+ * }} />
+ * ```
+ * 
+ * Features:
+ * - Real-time group search with debounced input
+ * - Click-to-add group membership
+ * - Inline email editing
+ * - Counter state management demonstration
+ * - Comprehensive error handling and loading states
+ */
+export const UserData = ({user}) => {
+    const {loading, error, fetch } = useAsyncAction(QueryGroupAsyncAction, {}, {deferred: true});
+    const {loading: loadingInsert, error: errorInsert, fetch: fetchInsert} = useAsyncAction(MembeshipInsertAsyncAction, {}, {deferred: true});
+    
+    const {fetch: refetchUser} = useAsyncAction(UserReadAsyncAction, {}, {deferred: true});
+
+    const [state, setState] = useState(value);
+    const [groups, setGroups] = useState([]);
+    const [delayer, setDelayer] = useState(() => CreateDelayer(1000));
+    const dispatch = useDispatch()
+
+    const onClick = () => {
+        value = value + 1;
+        const newState = state + 1;
+        setState(newState);
+    }
+    const onSelect = (group) => {
+        console.log("UserData.onSelect", group.id, group.name)
+        
+        const insertParams = {
+            userId: user.id,
+            groupId: group.id,
+            id: crypto.randomUUID(),
+            startdate: new Date().toISOString().replace("Z", ""),
+            enddate: null
+        }
+
+        console.log("UserData.onSelect.insertParams", insertParams)
+
+        fetchInsert(insertParams).then(
+            // json => refetchUser({id: user.id})
+            // json => {
+            //     console.log("UserData.onSelect.json", json)
+            //     const membership = json;
+            //     if (membership) {
+            //         const {__typename} = membership
+            //         if (__typename === "MembershipGQLModel") {
+            //             const {memberships} = user
+            //             const newMemberships = [...memberships, membership]
+            //             const newUser = {...user, memberships: newMemberships}
+            //             dispatch(ItemActions.item_update(newUser));
+            //         } 
+            //     } else {
+            //         console.error("UserData.onSelect.membershipInsert.error", json)
+            //     }
+            // }
+            json => followUpUserUpdate(user, json, dispatch)
+        )
+        .catch((error) => {
+            console.error("UserData.onSelect.membership.error", error)
+        })
+    }
+    const onChange = (e) => {
+        const data = e.target.value;
+        if (data.length > 2) {
+            delayer(() => fetch({ pattern: `%${data}%` }).then(
+                json => {
+                    const groups = json?.data?.groupPage || []
+                    setGroups(groups)
+                    console.log(json)
+                    return json
+                }
+            ))
+        }
+        console.log("UserData.onChange.data", data)
+    }
+    const onDelete = () => {
+        console.log("UserData.onDelete")
+    }
+    
+    return (
+        &lt;div>
+            UserData {value}, {state}
+            &lt;button className="btn btn-success" onClick={onClick}>Increment&lt;/button>&lt;br />
+            &lt;input className='form-control' type="text" defaultValue={"demo"} onChange={onChange}/>
+            {loading &amp;&amp; &lt;div>Loading...&lt;/div>}
+            {error &amp;&amp; &lt;div>Error: {JSON.stringify(error)}&lt;/div>}
+            {groups &amp;&amp; groups.map((group) => {
+                return &lt;LocalGroup key={group.id} group={group} onSelect={onSelect}/>
+            })}
+            &lt;UserEmailEdit user={user} />
+            &lt;DeleteButton onClick={onDelete}>D&lt;/DeleteButton>
+        &lt;/div>
+    )
+}
+
+
+/**
+ * User Email Edit Component
+ * 
+ * A React component that provides inline editing capabilities for user email
+ * and other user properties. Updates are sent immediately on change.
+ * 
+ * @component
+ * @param {Object} props - Component props
+ * @param {Object} props.user - The user object to edit
+ * @param {string} props.user.email - The user's current email address
+ * @param {string} props.user.id - The user's unique identifier
+ * @returns {JSX.Element} A div containing editable user fields
+ * 
+ * @example
+ * ```jsx
+ * &lt;UserEmailEdit user={{
+ *   id: "user-123",
+ *   email: "current@example.com"
+ * }} />
+ * ```
+ * 
+ * Features:
+ * - Real-time email updates on input change
+ * - Generic field editing through onChange2 handler
+ * - Loading state indication during updates
+ * - Error handling and display
+ * - Integration with UserMediumEditableContent component
+ */
+export const UserEmailEdit = ({user}) => {
+    const {loading, error, fetch } = useAsyncAction(UserUpdateAsyncAction, {}, {deferred: true});
+    const onChange = (e) => {
+        const email = e.target.value;
+        const newUser = {...user, email: email}
+        fetch(newUser)
+
+    }
+    const onChange2 = (e) => {
+        const newValue = e.target.value;
+        const id = e.target.id;
+        const newUser = {...user, [id]: newValue}
+        fetch(newUser)
+    }   
+    return (
+        &lt;div>
+            {loading &amp;&amp; &lt;div>Ukládám...&lt;/div>}
+            {error &amp;&amp; &lt;div>Došlo k chybě: {JSON.stringify(error)}&lt;/div>}
+            &lt;input type="text" className='form-control' defaultValue={user.email} onChange={onChange} />
+            
+            &lt;UserMediumEditableContent user={user} onChange={onChange2} />
+        &lt;/div>
+    )
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AdmissionButton">AdmissionButton</a></li><li><a href="global.html#AdmissionCardCapsule">AdmissionCardCapsule</a></li><li><a href="global.html#AdmissionChildren">AdmissionChildren</a></li><li><a href="global.html#AdmissionDeleteAsyncAction">AdmissionDeleteAsyncAction</a></li><li><a href="global.html#AdmissionDeleteMutation">AdmissionDeleteMutation</a></li><li><a href="global.html#AdmissionInsertAsyncAction">AdmissionInsertAsyncAction</a></li><li><a href="global.html#AdmissionInsertMutation">AdmissionInsertMutation</a></li><li><a href="global.html#AdmissionLargeCard">AdmissionLargeCard</a></li><li><a href="global.html#AdmissionLargeFragment">AdmissionLargeFragment</a></li><li><a href="global.html#AdmissionLink">AdmissionLink</a></li><li><a href="global.html#AdmissionList">AdmissionList</a></li><li><a href="global.html#AdmissionListAsyncAction">AdmissionListAsyncAction</a></li><li><a href="global.html#AdmissionListQuery">AdmissionListQuery</a></li><li><a href="global.html#AdmissionMediumCard">AdmissionMediumCard</a></li><li><a href="global.html#AdmissionMediumContent">AdmissionMediumContent</a></li><li><a href="global.html#AdmissionMediumEditableContent">AdmissionMediumEditableContent</a></li><li><a href="global.html#AdmissionPage">AdmissionPage</a></li><li><a href="global.html#AdmissionPageContent">AdmissionPageContent</a></li><li><a href="global.html#AdmissionPageContentLazy">AdmissionPageContentLazy</a></li><li><a href="global.html#AdmissionPageNavbar">AdmissionPageNavbar</a></li><li><a href="global.html#AdmissionReadAsyncAction">AdmissionReadAsyncAction</a></li><li><a href="global.html#AdmissionReadPageAsyncAction">AdmissionReadPageAsyncAction</a></li><li><a href="global.html#AdmissionReadPageQuery">AdmissionReadPageQuery</a></li><li><a href="global.html#AdmissionRouterSegment">AdmissionRouterSegment</a></li><li><a href="global.html#AdmissionScalarAttribute">AdmissionScalarAttribute</a></li><li><a href="global.html#AdmissionStateToggleButton">AdmissionStateToggleButton</a></li><li><a href="global.html#AdmissionTimeline">AdmissionTimeline</a></li><li><a href="global.html#AdmissionUpdateAsyncAction">AdmissionUpdateAsyncAction</a></li><li><a href="global.html#AdmissionUpdateMutation">AdmissionUpdateMutation</a></li><li><a href="global.html#AdmissionVectorsAttribute">AdmissionVectorsAttribute</a></li><li><a href="global.html#DataGenerator">DataGenerator</a></li><li><a href="global.html#GroupButton">GroupButton</a></li><li><a href="global.html#GroupCardCapsule">GroupCardCapsule</a></li><li><a href="global.html#GroupChildren">GroupChildren</a></li><li><a href="global.html#GroupDeleteAsyncAction">GroupDeleteAsyncAction</a></li><li><a href="global.html#GroupDeleteMutation">GroupDeleteMutation</a></li><li><a href="global.html#GroupInsertAsyncAction">GroupInsertAsyncAction</a></li><li><a href="global.html#GroupInsertMutation">GroupInsertMutation</a></li><li><a href="global.html#GroupLargeCard">GroupLargeCard</a></li><li><a href="global.html#GroupLargeFragment">GroupLargeFragment</a></li><li><a href="global.html#GroupLink">GroupLink</a></li><li><a href="global.html#GroupLinkFragment">GroupLinkFragment</a></li><li><a href="global.html#GroupMediumCard">GroupMediumCard</a></li><li><a href="global.html#GroupMediumContent">GroupMediumContent</a></li><li><a href="global.html#GroupMediumEditableContent">GroupMediumEditableContent</a></li><li><a href="global.html#GroupMediumFragment">GroupMediumFragment</a></li><li><a href="global.html#GroupPage">GroupPage</a></li><li><a href="global.html#GroupPageContent">GroupPageContent</a></li><li><a href="global.html#GroupPageContentLazy">GroupPageContentLazy</a></li><li><a href="global.html#GroupPageNavbar">GroupPageNavbar</a></li><li><a href="global.html#GroupReadAsyncAction">GroupReadAsyncAction</a></li><li><a href="global.html#GroupReadPageAsyncAction">GroupReadPageAsyncAction</a></li><li><a href="global.html#GroupReadPageQuery">GroupReadPageQuery</a></li><li><a href="global.html#GroupRouterSegment">GroupRouterSegment</a></li><li><a href="global.html#GroupScalarAttribute">GroupScalarAttribute</a></li><li><a href="global.html#GroupUpdateAsyncAction">GroupUpdateAsyncAction</a></li><li><a href="global.html#GroupUpdateMutation">GroupUpdateMutation</a></li><li><a href="global.html#GroupVectorsAttribute">GroupVectorsAttribute</a></li><li><a href="global.html#InsertStateMachineAsyncAction">InsertStateMachineAsyncAction</a></li><li><a href="global.html#LocalGroup">LocalGroup</a></li><li><a href="global.html#MembeshipInsertAsyncAction">MembeshipInsertAsyncAction</a></li><li><a href="global.html#PaymentAddAsyncAction">PaymentAddAsyncAction</a></li><li><a href="global.html#PaymentAddMutation">PaymentAddMutation</a></li><li><a href="global.html#PaymentGenerator">PaymentGenerator</a></li><li><a href="global.html#PaymentInfoUpdateAsyncAction">PaymentInfoUpdateAsyncAction</a></li><li><a href="global.html#ProgramPageAsyncAction">ProgramPageAsyncAction</a></li><li><a href="global.html#ProgramPageQuery">ProgramPageQuery</a></li><li><a href="global.html#ProgramSelect">ProgramSelect</a></li><li><a href="global.html#ProgramStatusManager">ProgramStatusManager</a></li><li><a href="global.html#QueryGroupAsyncAction">QueryGroupAsyncAction</a></li><li><a href="global.html#StateMachnineManagement">StateMachnineManagement</a></li><li><a href="global.html#TestPage">TestPage</a></li><li><a href="global.html#TitleNavButton">TitleNavButton</a></li><li><a href="global.html#UserButton">UserButton</a></li><li><a href="global.html#UserCardCapsule">UserCardCapsule</a></li><li><a href="global.html#UserChildren">UserChildren</a></li><li><a href="global.html#UserData">UserData</a></li><li><a href="global.html#UserDeleteAsyncAction">UserDeleteAsyncAction</a></li><li><a href="global.html#UserDeleteMutation">UserDeleteMutation</a></li><li><a href="global.html#UserEmailEdit">UserEmailEdit</a></li><li><a href="global.html#UserGroupsAttribute">UserGroupsAttribute</a></li><li><a href="global.html#UserInsertAsyncAction">UserInsertAsyncAction</a></li><li><a href="global.html#UserInsertMutation">UserInsertMutation</a></li><li><a href="global.html#UserLargeCard">UserLargeCard</a></li><li><a href="global.html#UserLargeFragment">UserLargeFragment</a></li><li><a href="global.html#UserLink">UserLink</a></li><li><a href="global.html#UserLinkFragment">UserLinkFragment</a></li><li><a href="global.html#UserMediumCard">UserMediumCard</a></li><li><a href="global.html#UserMediumContent">UserMediumContent</a></li><li><a href="global.html#UserMediumEditableContent">UserMediumEditableContent</a></li><li><a href="global.html#UserMediumFragment">UserMediumFragment</a></li><li><a href="global.html#UserPage">UserPage</a></li><li><a href="global.html#UserPageContent">UserPageContent</a></li><li><a href="global.html#UserPageContentLazy">UserPageContentLazy</a></li><li><a href="global.html#UserPageNavbar">UserPageNavbar</a></li><li><a href="global.html#UserReadAsyncAction">UserReadAsyncAction</a></li><li><a href="global.html#UserReadPageAsyncAction">UserReadPageAsyncAction</a></li><li><a href="global.html#UserReadPageQuery">UserReadPageQuery</a></li><li><a href="global.html#UserRouterSegment">UserRouterSegment</a></li><li><a href="global.html#UserScalarAttribute">UserScalarAttribute</a></li><li><a href="global.html#UserUpdateAsyncAction">UserUpdateAsyncAction</a></li><li><a href="global.html#UserUpdateMutation">UserUpdateMutation</a></li><li><a href="global.html#UserVectorsAttribute">UserVectorsAttribute</a></li><li><a href="global.html#followUpUserUpdate">followUpUserUpdate</a></li><li><a href="global.html#updateMembershipsForUser">updateMembershipsForUser</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Jul 23 2025 17:11:07 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

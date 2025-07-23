@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Admission/Components/AdmissionList.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Admission/Components/AdmissionList.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { AdmissionMediumCard } from "./AdmissionMediumCard";
+
+/**
+ * AdmissionList Component
+ * 
+ * Renders a list of admission items that have a licensed group in their program.
+ * Each admission is displayed using an AdmissionMediumCard component.
+ * 
+ * @component
+ * @param {Object} props - The props for the AdmissionList component.
+ * @param {Array&lt;Object>} props.admissions - Array of admission objects to display.
+ * @param {Object} props.admissions[].id - Unique identifier for the admission.
+ * @param {Object} props.admissions[].program - Program object associated with the admission.
+ * @param {boolean} props.admissions[].program.licencedGroup - Flag indicating if the program has a licensed group.
+ * @param {Function} props.refreshAdmissions - Callback function to refresh the admissions list.
+ * @param {boolean} props.isEditMode - Flag indicating if the list is in edit mode.
+ * 
+ * @returns {JSX.Element} A div containing the admission list with a header and filtered admission cards.
+ * 
+ * @example
+ * const admissions = [
+ *   { id: 1, program: { licencedGroup: true }, name: "Computer Science" },
+ *   { id: 2, program: { licencedGroup: false }, name: "Mathematics" }
+ * ];
+ * 
+ * &lt;AdmissionList 
+ *   admissions={admissions} 
+ *   refreshAdmissions={() => console.log('Refresh')} 
+ *   isEditMode={false} 
+ * />
+ */
+export const AdmissionList = ({admissions, refreshAdmissions, isEditMode}) => {
+
+  return (
+    &lt;div>
+      &lt;h3>Otevřené řízení na fakultu&lt;/h3>
+        {admissions.map((admission) => (
+            admission.program.licencedGroup &amp;&amp; (
+              &lt;div key={admission.id}>
+                &lt;AdmissionMediumCard admission={admission} onRefresh={refreshAdmissions} isEditMode={isEditMode} />
+              &lt;/div>
+            )
+          ))}
+    &lt;/div>
+  );
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AdmissionButton">AdmissionButton</a></li><li><a href="global.html#AdmissionCardCapsule">AdmissionCardCapsule</a></li><li><a href="global.html#AdmissionChildren">AdmissionChildren</a></li><li><a href="global.html#AdmissionDeleteAsyncAction">AdmissionDeleteAsyncAction</a></li><li><a href="global.html#AdmissionDeleteMutation">AdmissionDeleteMutation</a></li><li><a href="global.html#AdmissionInsertAsyncAction">AdmissionInsertAsyncAction</a></li><li><a href="global.html#AdmissionInsertMutation">AdmissionInsertMutation</a></li><li><a href="global.html#AdmissionLargeCard">AdmissionLargeCard</a></li><li><a href="global.html#AdmissionLargeFragment">AdmissionLargeFragment</a></li><li><a href="global.html#AdmissionLink">AdmissionLink</a></li><li><a href="global.html#AdmissionList">AdmissionList</a></li><li><a href="global.html#AdmissionListAsyncAction">AdmissionListAsyncAction</a></li><li><a href="global.html#AdmissionListQuery">AdmissionListQuery</a></li><li><a href="global.html#AdmissionMediumCard">AdmissionMediumCard</a></li><li><a href="global.html#AdmissionMediumContent">AdmissionMediumContent</a></li><li><a href="global.html#AdmissionMediumEditableContent">AdmissionMediumEditableContent</a></li><li><a href="global.html#AdmissionPage">AdmissionPage</a></li><li><a href="global.html#AdmissionPageContent">AdmissionPageContent</a></li><li><a href="global.html#AdmissionPageContentLazy">AdmissionPageContentLazy</a></li><li><a href="global.html#AdmissionPageNavbar">AdmissionPageNavbar</a></li><li><a href="global.html#AdmissionReadAsyncAction">AdmissionReadAsyncAction</a></li><li><a href="global.html#AdmissionReadPageAsyncAction">AdmissionReadPageAsyncAction</a></li><li><a href="global.html#AdmissionReadPageQuery">AdmissionReadPageQuery</a></li><li><a href="global.html#AdmissionRouterSegment">AdmissionRouterSegment</a></li><li><a href="global.html#AdmissionScalarAttribute">AdmissionScalarAttribute</a></li><li><a href="global.html#AdmissionStateToggleButton">AdmissionStateToggleButton</a></li><li><a href="global.html#AdmissionTimeline">AdmissionTimeline</a></li><li><a href="global.html#AdmissionUpdateAsyncAction">AdmissionUpdateAsyncAction</a></li><li><a href="global.html#AdmissionUpdateMutation">AdmissionUpdateMutation</a></li><li><a href="global.html#AdmissionVectorsAttribute">AdmissionVectorsAttribute</a></li><li><a href="global.html#DataGenerator">DataGenerator</a></li><li><a href="global.html#GroupButton">GroupButton</a></li><li><a href="global.html#GroupCardCapsule">GroupCardCapsule</a></li><li><a href="global.html#GroupChildren">GroupChildren</a></li><li><a href="global.html#GroupDeleteAsyncAction">GroupDeleteAsyncAction</a></li><li><a href="global.html#GroupDeleteMutation">GroupDeleteMutation</a></li><li><a href="global.html#GroupInsertAsyncAction">GroupInsertAsyncAction</a></li><li><a href="global.html#GroupInsertMutation">GroupInsertMutation</a></li><li><a href="global.html#GroupLargeCard">GroupLargeCard</a></li><li><a href="global.html#GroupLargeFragment">GroupLargeFragment</a></li><li><a href="global.html#GroupLink">GroupLink</a></li><li><a href="global.html#GroupLinkFragment">GroupLinkFragment</a></li><li><a href="global.html#GroupMediumCard">GroupMediumCard</a></li><li><a href="global.html#GroupMediumContent">GroupMediumContent</a></li><li><a href="global.html#GroupMediumEditableContent">GroupMediumEditableContent</a></li><li><a href="global.html#GroupMediumFragment">GroupMediumFragment</a></li><li><a href="global.html#GroupPage">GroupPage</a></li><li><a href="global.html#GroupPageContent">GroupPageContent</a></li><li><a href="global.html#GroupPageContentLazy">GroupPageContentLazy</a></li><li><a href="global.html#GroupPageNavbar">GroupPageNavbar</a></li><li><a href="global.html#GroupReadAsyncAction">GroupReadAsyncAction</a></li><li><a href="global.html#GroupReadPageAsyncAction">GroupReadPageAsyncAction</a></li><li><a href="global.html#GroupReadPageQuery">GroupReadPageQuery</a></li><li><a href="global.html#GroupRouterSegment">GroupRouterSegment</a></li><li><a href="global.html#GroupScalarAttribute">GroupScalarAttribute</a></li><li><a href="global.html#GroupUpdateAsyncAction">GroupUpdateAsyncAction</a></li><li><a href="global.html#GroupUpdateMutation">GroupUpdateMutation</a></li><li><a href="global.html#GroupVectorsAttribute">GroupVectorsAttribute</a></li><li><a href="global.html#InsertStateMachineAsyncAction">InsertStateMachineAsyncAction</a></li><li><a href="global.html#LocalGroup">LocalGroup</a></li><li><a href="global.html#MembeshipInsertAsyncAction">MembeshipInsertAsyncAction</a></li><li><a href="global.html#PaymentAddAsyncAction">PaymentAddAsyncAction</a></li><li><a href="global.html#PaymentAddMutation">PaymentAddMutation</a></li><li><a href="global.html#PaymentGenerator">PaymentGenerator</a></li><li><a href="global.html#PaymentInfoUpdateAsyncAction">PaymentInfoUpdateAsyncAction</a></li><li><a href="global.html#ProgramPageAsyncAction">ProgramPageAsyncAction</a></li><li><a href="global.html#ProgramPageQuery">ProgramPageQuery</a></li><li><a href="global.html#ProgramSelect">ProgramSelect</a></li><li><a href="global.html#ProgramStatusManager">ProgramStatusManager</a></li><li><a href="global.html#QueryGroupAsyncAction">QueryGroupAsyncAction</a></li><li><a href="global.html#StateMachnineManagement">StateMachnineManagement</a></li><li><a href="global.html#TestPage">TestPage</a></li><li><a href="global.html#TitleNavButton">TitleNavButton</a></li><li><a href="global.html#UserButton">UserButton</a></li><li><a href="global.html#UserCardCapsule">UserCardCapsule</a></li><li><a href="global.html#UserChildren">UserChildren</a></li><li><a href="global.html#UserData">UserData</a></li><li><a href="global.html#UserDeleteAsyncAction">UserDeleteAsyncAction</a></li><li><a href="global.html#UserDeleteMutation">UserDeleteMutation</a></li><li><a href="global.html#UserEmailEdit">UserEmailEdit</a></li><li><a href="global.html#UserGroupsAttribute">UserGroupsAttribute</a></li><li><a href="global.html#UserInsertAsyncAction">UserInsertAsyncAction</a></li><li><a href="global.html#UserInsertMutation">UserInsertMutation</a></li><li><a href="global.html#UserLargeCard">UserLargeCard</a></li><li><a href="global.html#UserLargeFragment">UserLargeFragment</a></li><li><a href="global.html#UserLink">UserLink</a></li><li><a href="global.html#UserLinkFragment">UserLinkFragment</a></li><li><a href="global.html#UserMediumCard">UserMediumCard</a></li><li><a href="global.html#UserMediumContent">UserMediumContent</a></li><li><a href="global.html#UserMediumEditableContent">UserMediumEditableContent</a></li><li><a href="global.html#UserMediumFragment">UserMediumFragment</a></li><li><a href="global.html#UserPage">UserPage</a></li><li><a href="global.html#UserPageContent">UserPageContent</a></li><li><a href="global.html#UserPageContentLazy">UserPageContentLazy</a></li><li><a href="global.html#UserPageNavbar">UserPageNavbar</a></li><li><a href="global.html#UserReadAsyncAction">UserReadAsyncAction</a></li><li><a href="global.html#UserReadPageAsyncAction">UserReadPageAsyncAction</a></li><li><a href="global.html#UserReadPageQuery">UserReadPageQuery</a></li><li><a href="global.html#UserRouterSegment">UserRouterSegment</a></li><li><a href="global.html#UserScalarAttribute">UserScalarAttribute</a></li><li><a href="global.html#UserUpdateAsyncAction">UserUpdateAsyncAction</a></li><li><a href="global.html#UserUpdateMutation">UserUpdateMutation</a></li><li><a href="global.html#UserVectorsAttribute">UserVectorsAttribute</a></li><li><a href="global.html#followUpUserUpdate">followUpUserUpdate</a></li><li><a href="global.html#updateMembershipsForUser">updateMembershipsForUser</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Jul 23 2025 17:11:07 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
