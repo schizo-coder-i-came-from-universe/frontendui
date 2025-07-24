@@ -7,11 +7,10 @@ This repository represents the development journey of a comprehensive React-base
 ## Problems to be Solved
 
 ### Primary Challenges Identified
-1. **Complex University Admission Management**: The existing system lacked a unified, user-friendly interface for managing multi-stage admission processes across different study programs
-2. **Faculty Administrative Burden**: Faculty staff needed centralized tools to efficiently handle large volumes of student applications, payments, and admission workflows
-3. **Fragmented Student Experience**: Students required streamlined interfaces to track application progress, submit required documents, and complete admission requirements
-4. **Legacy System Integration**: The existing UOIS platform (`apl.unob.cz`) needed enhancement without complete replacement
-5. **Scalable Component Architecture**: Need for reusable, maintainable UI components across multiple applications
+1. **Listed admission procedures at the faculty (according to the programs offered by the faculty)
+2. **Opening of the admission procedure
+3. **FDisplay of aggregated data (number of applications to programs and their status)
+4. **Display of a timeline (calendar of events related to the admission procedures)
 
 ## Chronological Development Journey
 

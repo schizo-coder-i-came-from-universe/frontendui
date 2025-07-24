@@ -1,6 +1,6 @@
 {
-  "name": "@schizo-coder/uoisfrontend-faculty_view",
-  "version": "0.5.0",
+  "name": "@schizo-coder/uoisfrontend-faculty_view2",
+  "version": "0.6.0",
   "main": "src/index.js",
   "files": [
     "src/"
