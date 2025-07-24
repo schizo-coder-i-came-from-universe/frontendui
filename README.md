@@ -7,10 +7,10 @@ This repository represents the development journey of a comprehensive React-base
 ## Problems to be Solved
 
 ### Primary Challenges Identified
-1. **Listed admission procedures at the faculty (according to the programs offered by the faculty)
-2. **Opening of the admission procedure
-3. **FDisplay of aggregated data (number of applications to programs and their status)
-4. **Display of a timeline (calendar of events related to the admission procedures)
+1. **Listed admission procedures at the faculty (according to the programs offered by the faculty)**
+2. **Opening of the admission procedure**
+3. **Display of aggregated data (number of applications to programs and their status)**
+4. **Display of a timeline (calendar of events related to the admission procedures)**
 
 ## Chronological Development Journey
 
